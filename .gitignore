@@ -1,0 +1,27 @@
+.venv/
+.venv-model/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+# CAT's compiled extension: `pip install -e .` builds it next to its source (setup.py)
+src/oncue/baselines/cat/advgen/*.so
+runs/
+# the work folder's environments and clones when it is this repository (ONCUE_HOME's default)
+/envs/
+/baselines/
+/.cache/
+/miniforge3/
+.DS_Store
+
+# model weights (ours and later third-party), not versioned: weights/README.md lists them
+weights/*
+!weights/README.md
+
+# LaTeX build output
+docs/paper/latex/*.pdf
+docs/summary/*.pdf
+docs/summary/*.png
+COMMIT

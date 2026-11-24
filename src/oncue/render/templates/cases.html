@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OnCue tests</title>
+<style>
+/*COMMON_CSS*/
+#app { --dock: 230px; }
+#controls { flex-wrap: wrap; }
+.runchips { order: 5; max-width: none; width: 100%; padding-top: 2px; }
+.chip.hit { color: var(--danger); } .chip.safe { color: var(--good); }
+.pill { display: inline-block; border-radius: 999px; padding: 1px 9px; font-weight: 600; font-size: 12px; background: var(--chip); }
+.pill.anticipation { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.pill.reaction { background: color-mix(in srgb, var(--good) 14%, transparent); color: var(--good); }
+.runchips { display: flex; flex-wrap: wrap; gap: 4px; }
+.runchip { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 2px 9px; cursor: pointer; font-size: 11.5px; display: inline-flex; align-items: center; gap: 5px; }
+.runchip[aria-pressed=false] { opacity: .45; }
+.runchip i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.plan { border: 1px solid var(--line); border-radius: 12px; padding: 9px 11px; margin-bottom: 8px; background: var(--panel); }
+.plan .head { font-weight: 600; margin-bottom: 6px; }
+.plan .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mode { border-radius: 9px; padding: 6px 8px; background: var(--soft); cursor: pointer; border: 1px solid transparent; }
+.mode:hover { border-color: var(--line); }
+.mode.on { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent); }
+.mode .r { font-weight: 600; display: flex; align-items: center; gap: 6px; } .mode .m { color: var(--muted); font-size: 11.5px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="view"><canvas id="bev"></canvas>
+    <div id="empty"><div class="card" data-i18n="empty"></div></div></div>
+  <aside id="left" class="card">
+    <div class="brand"><span class="logo"></span><b>OnCue</b><span class="muted" data-i18n="brand"></span></div>
+    <div id="stats"></div>
+    <div id="filters">
+      <div class="group" id="f-target"></div>
+      <div class="group" id="f-kind"></div>
+      <div class="group" id="f-test"></div>
+      <div class="group"><button class="toggle" id="f-hit" aria-pressed="false" data-i18n="f_hit" data-i18n-title="f_hit_tip"></button></div>
+      <div id="count"></div>
+    </div>
+    <div id="list"></div>
+  </aside>
+  <nav id="toolbar" class="card" aria-label="views">
+    <button id="toggle-left" aria-pressed="true" aria-controls="left" data-i18n="tb_cases"></button>
+    <button id="toggle-stats" aria-pressed="false" aria-controls="statsview" data-i18n="tb_stats"></button>
+    <button id="toggle-help" aria-controls="help" data-i18n="tb_help"></button>
+    <button id="toggle-lang" data-i18n="tb_lang"></button>
+  </nav>
+  <div id="legend" class="card"></div>
+  <section id="dock" class="card">
+    <div id="controls">
+      <button id="play" aria-label="Play">▶</button>
+      <input type="range" id="scrub" min="0" max="0" value="0" aria-label="frame">
+      <div class="runchips" id="runchips"></div>
+      <span id="clock"></span>
+    </div>
+    <canvas id="vis"></canvas>
+  </section>
+  <aside id="right" class="card"><div data-i18n="right_empty"></div></aside>
+  <section id="statsview" class="card" hidden></section>
+</div>
+<div id="help" hidden role="dialog" aria-modal="true"><div class="modal card" id="help-body"></div></div>
+<script>
+/*COMMON_JS*/
+const INDEX = /*INDEX*/[];
+window.CASES = window.CASES || {};
+const RUNS = [
+  ["reference", "--ego"],
+  ["reactive_masked", "#dc2626"], ["reactive_see", "#16a34a"],
+  ["conservative_masked", "#d97706"], ["conservative_see", "#65a30d"],
+  ["occlusion_aware_masked", "#7c3aed"], ["occlusion_aware_see", "#0891b2"],
+  ["pdm_closed_masked", "#db2777"], ["pdm_closed_see", "#0f766e"],
+  ["latentdriver_masked", "#854d0e"], ["latentdriver_see", "#4d7c0f"],
+];
+const color = k => { const c = RUNS.find(r => r[0] === k)[1]; return c.startsWith("--") ? css(c) : c; };
+const state = { rows: [], i: null, scene: null, frame: 0, playing: false, view: null, box: null, focus: null, pending: 0,
+  shown: new Set(["reference", "reactive_masked", "reactive_see", "occlusion_aware_masked"]) };
+const filters = { targets: new Set(), kinds: new Set(), tests: new Set(), hit: false };
+
+const L = {
+  en: {
+    title: "OnCue tests", brand: "tests in closed loop",
+    empty: "<b>Pick a case on the left</b>Each case inserts a pedestrian, cyclist or vehicle behind a recorded occluder of a real driving log and replays it with planners that cannot or can see through occluders.",
+    right_empty: '<h2>Case details</h2><p class="muted">Pick a case on the left. Its event times, its label and the outcome of every planner appear here.</p>',
+    tb_cases: "☰ Cases", tb_stats: "▦ Stats", tb_help: "? Help", tb_lang: "中文",
+    stats_line: "{0} cases in {1} scenes", shown: "{0} shown",
+    pedestrian: "pedestrian", cyclist: "cyclist", vehicle: "vehicle",
+    kerb: "parked-vehicle crossing (kerb)", median: "parked-vehicle crossing (median)", lot: "parked-vehicle crossing (off-road lot)",
+    queue: "queue-gap crossing", lane: "intersecting lanes",
+    reaction: "Reactive test", anticipation: "Anticipatory test",
+    f_hit: "masked IDM-base hits", f_hit_tip: "only cases where the masked IDM-base planner hits the target",
+    reference: "reference ego", reactive: "IDM-base", conservative: "IDM-conservative", occlusion_aware: "IDM-occlusion-aware",
+    pdm_closed: "PDM-Closed", latentdriver: "LatentDriver",
+    masked: "masked", see: "unoccluded", hit: "hits", safe: "avoids", failed: "run failed (counted apart, still in every rate)", known: "knows it at {0} s", brake: "brakes at {0} s",
+    contact: "contact at {0} m/s",
+    other_contact: "touched another road user (a failure)",
+    rear_ended: "rear-ended in its lane: excused, not a failure (followers replay their log and drive through the ego)",
+    d_target: "Target", d_scene: "Scene", d_W: "Window W, exposure to contact", d_events: "Exposure → reference contact",
+    d_ma: "Safe responses after exposure", d_ma0: "Safe responses from early visibility",
+    d_speed: "Target peak speed", d_ego: "Reference ego at exposure", d_limit: "Lane speed limit", planners: "Planners in closed loop",
+    plan_note: "Click a run to follow it; the others fade.",
+    lg_title: "Legend", lg_target: "target (hollow: hidden from the reference ego)", lg_occ: "occluding vehicle", lg_other: "other vehicles", lg_walker: "other pedestrians and cyclists", lg_static: "static occluders: buildings, walls, vegetation approximated from the map",
+    lg_ref: "reference ego (fixed protocol, never reacts to the target)", lg_runs: "planner runs, each with its last second as a fading trail: solid path masked, dashed path unoccluded", lg_edge: "road edge", lg_yellow: "yellow centre line",
+    tag_hidden: "hidden", tag_visible: "visible", tag_revealed: "exposed {0} s",
+    tag_run_target: "as in {0} (generated timing dashed)",
+    c_anchor: "now", c_reveal: "exposure", c_contact: "contact", c_legend: "target visibility (left), ego speed (right)",
+    frame: "frame {0}",
+    st_title: "Statistics", st_intro: "Over the {0} cases in the list.",
+    k_cases: "cases", k_scenes: "scenes", k_anti: "Anticipatory tests", k_hit: "masked IDM-base hits (Anticipatory)",
+    s_W: "Window W", s_W_note: "Seconds from the exposure to the reference contact.", s_runs: "Hit rate per run", s_runs_note: "Share of the listed cases in which each run hits the target.",
+  },
+  zh: {
+    title: "OnCue 测试", brand: "闭环中的测试",
+    empty: "<b>在左侧选一个案例</b>每个案例在真实驾驶日志的遮挡物后插入一个行人、骑车人或车辆，用看不见和看得见遮挡物后方的规划器分别回放。",
+    right_empty: '<h2>案例详情</h2><p class="muted">在左侧选一个案例，这里会显示它的事件时刻、标签和每个规划器的结果。</p>',
+    tb_cases: "☰ 案例", tb_stats: "▦ 统计", tb_help: "? 帮助", tb_lang: "English",
+    stats_line: "{0} 个案例，来自 {1} 个场景", shown: "显示 {0} 个",
+    pedestrian: "行人", cyclist: "骑车人", vehicle: "车辆",
+    kerb: "停放车辆后横穿（路缘）", median: "停放车辆后横穿（中央隔离带）", lot: "停放车辆后横穿（路外停车区）",
+    queue: "车队空隙横穿", lane: "交叉车道",
+    reaction: "反应测试", anticipation: "预判测试",
+    f_hit: "屏蔽版基础式撞上", f_hit_tip: "只看屏蔽版基础式 IDM 撞上目标的案例",
+    reference: "参照自车", reactive: "基础式 IDM", conservative: "保守式 IDM", occlusion_aware: "遮挡感知式 IDM",
+    pdm_closed: "PDM-Closed", latentdriver: "LatentDriver",
+    masked: "屏蔽", see: "无遮挡", hit: "撞上", safe: "躲开", failed: "运行出错（单独计数，仍算在比例的分母里）", known: "{0} s 时得知", brake: "{0} s 时刹车",
+    contact: "接触车速 {0} m/s",
+    other_contact: "碰到了其他道路使用者（算失败）",
+    rear_ended: "在本车道被后车追尾：不算失败（后车按日志回放，会直接穿过自车）",
+    d_target: "目标", d_scene: "场景", d_W: "窗口 W，显露到接触", d_events: "显露 → 参照接触",
+    d_ma: "显露后安全响应占比", d_ma0: "提前可见时安全响应占比",
+    d_speed: "目标峰值速度", d_ego: "显露时参照自车车速", d_limit: "车道限速", planners: "闭环中的规划器",
+    plan_note: "点击某次运行可单独跟随，其余变淡。",
+    lg_title: "图例", lg_target: "目标（空心：参照自车看不见）", lg_occ: "遮挡车", lg_other: "其他车辆", lg_walker: "其他行人和骑车人", lg_static: "静态遮挡：按地图推定的建筑、墙、树木",
+    lg_ref: "参照自车（按固定协议行驶，不对目标作反应）", lg_runs: "规划器运行（淡影为最近一秒）：实线路径为屏蔽，虚线路径为无遮挡", lg_edge: "道路边缘", lg_yellow: "黄色中心线",
+    tag_hidden: "被挡住", tag_visible: "可见", tag_revealed: "{0} s 显露",
+    tag_run_target: "{0} 中的位置（虚线为生成时的时刻）",
+    c_anchor: "现在", c_reveal: "显露", c_contact: "接触", c_legend: "目标可见度（左轴），自车车速（右轴）",
+    frame: "第 {0} 帧",
+    st_title: "统计", st_intro: "针对列表中的 {0} 个案例。",
+    k_cases: "案例", k_scenes: "场景", k_anti: "预判测试", k_hit: "屏蔽版基础式撞上（预判测试）",
+    s_W: "窗口 W", s_W_note: "从显露到参照接触的秒数。", s_runs: "各次运行撞上的比例", s_runs_note: "列表中每次运行撞上目标的案例占比。",
+  },
+};
+const HELP = {
+  en: `<h2>How to read this page</h2>
+<div class="muted">Each case inserts a hidden target (a pedestrian, cyclist or vehicle) behind a recorded occluder of a real driving log. A <b>reference ego</b> follows the logged route under a fixed IDM protocol and never reacts to the target; the target stays hidden from it until its <b>exposure</b> and first touches it at the <b>reference contact</b>. The window W is the time between the two.</div>
+<h3>What to look at</h3>
+<ol>
+<li><b>Pick a case</b> on the left (<kbd>↑</kbd><kbd>↓</kbd>); filter by target type, occlusion family and label.</li>
+<li><b>Play</b> it (<kbd>Space</kbd>). The target is hollow while the reference ego cannot see it and filled once it can.</li>
+<li><b>Compare planners</b>: each planner runs <i>masked</i> (it perceives only what is visible from its own position) and <i>unoccluded</i> (it perceives every road user; occluders still block motion). Toggle runs in the bottom bar; click a run on the right to follow it.</li>
+<li><b>Read the timeline</b>: the target's visibility to the reference ego and each shown ego's speed, with the exposure and the reference contact.</li>
+</ol>
+<h3>Labels</h3>
+<dl>
+<dt>Reactive test</dt><dd>Some response of the oracle's finite library, started at exposure, avoids the target.</dd>
+<dt>Anticipatory test</dt><dd>No response started at exposure avoids it, but one started at the target's first visibility with the blocking occluders made transparent does: only acting before exposure helps.</dd>
+<dt>Safe-response shares</dt><dd>Of the oracle's responses that are feasible and clear of other road users, the share that also avoids the target, started at exposure and from early visibility. Labels use the core 288 responses, extended to 1,316 unless the core already holds a safe response after the reveal.</dd>
+</dl>
+<h3>Keys</h3>
+<div><kbd>Space</kbd> play, <kbd>←</kbd><kbd>→</kbd> frame, <kbd>↑</kbd><kbd>↓</kbd> case, <kbd>[</kbd> case list, <kbd>s</kbd> stats, <kbd>?</kbd> help. Drag to pan, scroll to zoom, double-click to fit.</div>
+<p class="muted">Target motion is generated, then verified; no trajectory is edited after generation. Other road users replay their logs and do not react to the egos.</p>`,
+  zh: `<h2>如何阅读这个页面</h2>
+<div class="muted">每个案例在真实驾驶日志的遮挡物后插入一个隐藏的目标（行人、骑车人或车辆）。<b>参照自车</b>沿日志路线按固定的 IDM 协议行驶，不对目标作反应；目标在<b>显露</b>之前对它不可见，并在<b>参照接触</b>时刻第一次碰到它。两者之间的时间就是窗口 W。</div>
+<h3>看什么</h3>
+<ol>
+<li><b>选一个案例</b>（<kbd>↑</kbd><kbd>↓</kbd>），可按目标类型、遮挡类型和标签筛选。</li>
+<li><b>播放</b>（<kbd>Space</kbd>）。参照自车看不见目标时，目标是空心的；看得见后变成实心。</li>
+<li><b>比较规划器</b>：每个规划器分<i>屏蔽</i>（只知道从自己位置看得见的）和<i>无遮挡</i>（知道所有道路使用者，遮挡物仍挡路）两次运行。在底部开关各次运行；点击右侧某次运行可单独跟随。</li>
+<li><b>看时间轴</b>：目标对参照自车的可见度、各自车的车速，以及显露和参照接触时刻。</li>
+</ol>
+<h3>标签</h3>
+<dl>
+<dt>反应测试</dt><dd>oracle 的有限响应库里，有从显露时刻开始的响应能躲开目标。</dd>
+<dt>预判测试</dt><dd>从显露时刻开始的响应都躲不开，但把挡视线的遮挡物变透明、从目标第一次可见时开始的响应能躲开：只有在显露之前行动才有用。</dd>
+<dt>安全响应占比</dt><dd>在可行且不碰其他道路使用者的响应中，也能躲开目标的比例，分别从显露时刻和提前可见时开始。标签先用核心的 288 个响应，核心里没有显露后的安全响应时扩展到 1,316 个。</dd>
+</dl>
+<h3>快捷键</h3>
+<div><kbd>Space</kbd> 播放 / 暂停，<kbd>←</kbd><kbd>→</kbd> 逐帧，<kbd>↑</kbd><kbd>↓</kbd> 切换案例，<kbd>[</kbd> 收起 / 展开列表，<kbd>s</kbd> 统计，<kbd>?</kbd> 帮助。拖动平移，滚轮缩放，双击复位。</div>
+<p class="muted">目标运动先生成、再检查，生成后从不修改。其他道路使用者按日志回放，不对自车作反应。</p>`,
+};
+
+const runName = k => k === "reference" ? t("reference") : `${t(k.replace(/_(masked|see)$/, ""))} ${t(k.endsWith("masked") ? "masked" : "see")}`;
+
+function initFilters() {
+  const make = (id, values, set) => values.forEach(v => {
+    const b = document.createElement("button");
+    b.className = "toggle"; b.dataset.value = v; b.textContent = t(v); b.setAttribute("aria-pressed", "false");
+    b.onclick = () => { set.has(v) ? set.delete(v) : set.add(v); b.setAttribute("aria-pressed", set.has(v)); refresh(); };
+    $(id).appendChild(b);
+  });
+  make("f-target", [...new Set(INDEX.map(c => c.target).filter(Boolean))], filters.targets);
+  make("f-kind", [...new Set(INDEX.map(c => c.kind))], filters.kinds);
+  make("f-test", ["anticipation", "reaction"], filters.tests);
+  $("f-hit").onclick = () => { filters.hit = !filters.hit; $("f-hit").setAttribute("aria-pressed", filters.hit); refresh(); };
+}
+function relabel() { for (const b of document.querySelectorAll("#filters .toggle[data-value]")) b.textContent = t(b.dataset.value); }
+
+function refresh() {
+  state.rows = INDEX.filter(c => (!filters.targets.size || filters.targets.has(c.target)) && (!filters.kinds.size || filters.kinds.has(c.kind)) && (!filters.tests.size || filters.tests.has(c.test)) && (!filters.hit || c.hits.reactive_masked));
+  $("stats").textContent = t("stats_line", INDEX.length, new Set(INDEX.map(c => c.scene_id)).size);
+  $("count").textContent = t("shown", state.rows.length);
+  if (!$("statsview").hidden) $("statsview").innerHTML = statsHTML(state.rows);
+  const hit = (c, k) => `<span class="chip ${c.hits[k] ? "hit" : "safe"}" title="${esc(runName(k))}">${esc(t(k.replace(/_(masked|see)$/, "")).split(" ")[0])} ${esc(t(k.endsWith("masked") ? "masked" : "see"))} ${c.hits[k] ? "✕" : "✓"}</span>`;
+  $("list").innerHTML = state.rows.map((c, n) => `
+    <div class="row${state.i === c.i ? " sel" : ""}" data-n="${n}">
+      <div class="top"><b>W = ${c.W.toFixed(2)} s</b><span class="muted">${c.speed} m/s, <span class="mono">${esc(c.scene_id.slice(0, 8))}</span></span></div>
+      <div><span class="pill ${c.test}">${t(c.test)}</span> ${c.target ? `<span class="chip">${t(c.target)}</span> ` : ""}<span class="chip">${t(c.kind)}</span></div>
+      <div>${hit(c, "reactive_masked")}${hit(c, "reactive_see")}${hit(c, "occlusion_aware_masked")}</div>
+    </div>`).join("");
+  for (const el of $("list").children) el.onclick = () => select(state.rows[+el.dataset.n]);
+}
+
+function loadCase(i) {
+  if (window.CASES[i]) return Promise.resolve(window.CASES[i]);
+  return new Promise((ok, fail) => { const s = document.createElement("script"); s.src = `data/case_${i}.js`; s.onload = () => ok(window.CASES[i]); s.onerror = fail; document.head.appendChild(s); });
+}
+async function select(row) {
+  const ticket = ++state.pending, c = await loadCase(row.i);
+  if (ticket !== state.pending) return;
+  state.i = row.i; state.scene = c; state.focus = null;
+  state.frame = c.current_idx; $("scrub").max = c.times.length - 1; $("empty").style.display = "none";
+  const pts = c.target.xyh.map(p => [p[0], p[1]]);
+  const ref = c.egos.reference.xyh, a0 = c.current_idx, kc = Math.min(ref.length - 1, a0 + Math.round((c.label.t_c + 1.0) / c.dt));
+  for (let k = a0; k <= kc; k++) pts.push([ref[k][0], ref[k][1]]);
+  state.box = boundsOf(pts); state.view = null;
+  details(); refresh(); runChips(); draw();
+  // scroll the list only, not the page around it (the viewer may be embedded in another page)
+  const list = $("list"), sel = list.querySelector(".sel");
+  if (sel) {
+    const r = sel.getBoundingClientRect(), b = list.getBoundingClientRect();
+    if (r.top < b.top) list.scrollTop -= b.top - r.top;
+    else if (r.bottom > b.bottom) list.scrollTop += r.bottom - b.bottom;
+  }
+}
+
+function runChips() {
+  const c = state.scene; if (!c) return;
+  const short = k => k === "reference" ? t("reference") : `${t(k.replace(/_(masked|see)$/, "")).split(" ")[0]} ${t(k.endsWith("masked") ? "masked" : "see")}`;
+  $("runchips").innerHTML = RUNS.filter(([k]) => c.egos[k]).map(([k]) => `<button class="runchip" data-k="${k}" aria-pressed="${state.shown.has(k)}" title="${esc(runName(k))}"><i style="background:${color(k)}"></i>${esc(short(k))}</button>`).join("");
+  for (const b of $("runchips").children) b.onclick = () => { const k = b.dataset.k; state.shown.has(k) ? state.shown.delete(k) : state.shown.add(k); runChips(); draw(); };
+}
+
+function details() {
+  const c = state.scene, lab = c.label, O = c.outcome, f = v => v === null || v === undefined ? "–" : (+v).toFixed(2);
+  const meter = v => v === null || v === undefined ? "–" : `<span class="meter"><span class="bar"><i style="width:${Math.max(2, 100 * v).toFixed(0)}%;background:${v === 0 ? "var(--danger)" : v < 0.5 ? "var(--warn)" : "var(--good)"}"></i></span><b>${f(v)}</b></span>`;
+  const mode = k => { const o = O[k]; if (!o) return ""; if (o.error) return `<div class="mode"><div class="r"><span class="sw" style="background:${color(k)}"></span>${t(k.endsWith("masked") ? "masked" : "see")}: <span style="color:var(--warn)">${t("failed")}</span></div><div class="m mono">${esc(o.error)}</div></div>`; return `<div class="mode${state.focus === k ? " on" : ""}" data-k="${k}"><div class="r"><span class="sw" style="background:${color(k)}"></span>${t(k.endsWith("masked") ? "masked" : "see")}: <span style="color:${(o.hit ?? o.ego_hit) ? "var(--danger)" : "var(--good)"}">${t((o.hit ?? o.ego_hit) ? "hit" : "safe")}</span></div>
+    <div class="m">${o.known_s === null ? "" : t("known", f(o.known_s))}${o.brake_s === null ? "" : "; " + t("brake", f(o.brake_s))}${(o.hit ?? o.ego_hit) && o.contact_speed !== null ? "; " + t("contact", f(o.contact_speed)) : ""}</div>${o.other_contact ? `<div class="m" style="color:var(--danger)">${t("other_contact")}</div>` : ""}${o.rear_ended ? `<div class="m">${t("rear_ended")}</div>` : ""}</div>`; };
+  const plans = ["reactive", "conservative", "occlusion_aware", "pdm_closed", "latentdriver"].filter(p => O[p + "_masked"] || O[p + "_see"]).map(p => `<div class="plan"><div class="head">${t(p)}</div><div class="modes">${mode(p + "_masked")}${mode(p + "_see")}</div></div>`).join("");
+  $("right").innerHTML = `<h2>${t(lab.site_kind)} <span class="pill ${lab.test}">${t(lab.test)}</span></h2>
+    <dl><dt>${t("d_target")}</dt><dd>${t(c.kind)}</dd><dt>${t("d_W")}</dt><dd><b>${f(lab.W)} s</b></dd>
+      <dt>${t("d_events")}</dt><dd>${signed(lab.t_r)} → ${signed(lab.t_c)} s</dd>
+      <dt>${t("d_ma")}</dt><dd>${meter(lab.ma)}</dd><dt>${t("d_ma0")}</dt><dd>${meter(lab.ma0)}</dd>
+      <dt>${t("d_speed")}</dt><dd>${lab.speed} m/s</dd><dt>${t("d_ego")}</dt><dd>${f(lab.ego_speed_at_reveal)} m/s</dd>
+      <dt>${t("d_limit")}</dt><dd>${f(lab.speed_limit)} m/s</dd><dt>${t("d_scene")}</dt><dd class="mono">${esc(c.scene_id)}</dd></dl>
+    <h3>${t("planners")}</h3><p class="muted" style="margin:0 0 8px">${t("plan_note")}</p>${plans}`;
+  for (const el of document.querySelectorAll(".mode")) el.onclick = () => { const k = el.dataset.k; state.focus = state.focus === k ? null : k; if (state.focus) state.shown.add(k); details(); runChips(); draw(); };
+}
+
+function legend() {
+  const item = (c, label, style = "") => `<div><span class="sw" style="background:${c};${style}"></span>${label}</div>`;
+  $("legend").innerHTML = `<details open><summary>${t("lg_title")}</summary><div style="display:grid;gap:3px;margin-top:6px">` +
+    item("var(--target)", t("lg_target")) + item("var(--occluder)", t("lg_occ")) + item("var(--other)", t("lg_other")) + item("var(--walker)", t("lg_walker")) + item("var(--static)", t("lg_static")) +
+    `<div><span class="sw" style="border:1.5px dashed var(--ego)"></span>${t("lg_ref")}</div>` +
+    `<div><span class="sw" style="background:#dc2626"></span><span class="sw" style="background:#16a34a"></span>${t("lg_runs")}</div>` + item("var(--edge)", t("lg_edge")) + item("var(--yellow-line)", t("lg_yellow")) + `</div></details>`;
+}
+
+function draw() {
+  drawBev(); drawVis();
+  const c = state.scene; if (!c) return;
+  $("scrub").value = state.frame;
+  $("clock").textContent = `${t("frame", state.frame)}, ${signed(c.times[state.frame])} s`;
+}
+
+function drawBev() {
+  const [canvas, ctx, dpr] = canvasOf("bev"), c = state.scene; if (!c) return;
+  const [T, scale] = transform(canvas), f = state.frame, a0 = c.current_idx;
+  drawStatic(ctx, T, c.static);
+  drawMap(ctx, T, c.map, dpr);
+  drawRoadUsers(ctx, T, scale, dpr, c, f);
+  const order = RUNS.filter(([k]) => state.shown.has(k) && c.egos[k]);
+  const faded = k => state.focus && state.focus !== k && k !== "reference";
+  for (const [k] of order) {  // paths since the anchor
+    ctx.globalAlpha = faded(k) ? .15 : k === "reference" ? .3 : .7;
+    polyline(ctx, T, c.egos[k].xyh.slice(a0, f + 1)); ctx.strokeStyle = color(k); ctx.lineWidth = (k === "reference" ? 3 : 1.6) * dpr;
+    ctx.setLineDash(k.endsWith("_see") ? [5 * dpr, 4 * dpr] : []); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.globalAlpha = 1;
+  const target = c.target.xyh[f], v = c.visible[f], seen = v !== null && v >= c.threshold, ref = c.egos.reference.xyh[f];
+  if (ref && target) {  // the reference ego's sight line: green when the target is visible
+    polyline(ctx, T, [ref, target]); ctx.strokeStyle = seen ? css("--good") : css("--muted"); ctx.lineWidth = 1 * dpr;
+    ctx.setLineDash([2 * dpr, 4 * dpr]); ctx.stroke(); ctx.setLineDash([]);
+  }
+  for (const [k] of order) {  // each shown ego with its trail; a faded one without
+    const xyh = c.egos[k].xyh[f]; if (!xyh) continue;
+    if (faded(k)) { ctx.globalAlpha = .25; box(ctx, T, xyh, c.ego_size, null, color(k), false, 2 * dpr); ctx.globalAlpha = 1; }
+    else drawEgo(ctx, T, scale, dpr, c.egos[k].xyh, f, c.dt, c.ego_size, color(k), k === "reference");
+  }
+  const revealed = f >= a0 + Math.round(c.label.t_r / c.dt);
+  // a followed run whose triggered start moved the target: the target as that run moved it,
+  // the generated timing dashed and grey (the reveal and visibility refer to that timing)
+  const moved = state.focus && c.egos[state.focus] && c.egos[state.focus].target;
+  if (moved && moved[f]) {
+    if (target) box(ctx, T, target, c.target.size, null, css("--muted"), true, 1.5 * dpr);
+    box(ctx, T, moved[f], c.target.size, css("--target"), css("--target"), false, 2 * dpr);
+    const [mx, my] = T(moved[f]);
+    tag(ctx, mx, my, t("tag_run_target", runName(state.focus)), css("--target"), dpr);
+  } else {
+    const shape = c.kind === "pedestrian" ? "pedestrian" : "vehicle";
+    withTrail(ctx, c.target.xyh, f, c.dt, p => softShape(ctx, T, scale, dpr, p, c.target.size, shape, css("--target")), false);
+    box(ctx, T, target, c.target.size, seen ? css("--target") : null, css("--target"), !seen, 2 * dpr);
+    const [px, py] = T(target);
+    tag(ctx, px, py, revealed ? t("tag_revealed", signed(c.label.t_r)) : t(seen ? "tag_visible" : "tag_hidden"), css("--target"), dpr);
+  }
+  const lead = state.focus || order.map(r => r[0]).find(k => k !== "reference");
+  if (lead && c.egos[lead].xyh[f]) { const [ex, ey] = T(c.egos[lead].xyh[f]); tag(ctx, ex, ey, runName(lead), color(lead), dpr); }
+  drawScale(ctx, scale, dpr);
+}
+
+function drawVis() {
+  const [canvas, ctx, dpr] = canvasOf("vis"), c = state.scene; if (!c) return;
+  const px = v => v * dpr, font = s => `${px(s)}px system-ui, sans-serif`, a0 = c.current_idx, n = c.times.length;
+  const Lm = px(52), R = px(56), top = px(24), bottom = canvas.height - px(24);
+  const t0 = c.times[a0], t1 = c.times[n - 1];
+  const X = tt => Lm + (canvas.width - Lm - R) * (tt - t0) / (t1 - t0), Y = v => bottom - (bottom - top) * v;
+  const fr = a0 + Math.round(c.label.t_r / c.dt), fc = a0 + Math.round(c.label.t_c / c.dt);
+  ctx.fillStyle = css("--chip"); ctx.fillRect(X(t0), top, X(c.times[fr]) - X(t0), bottom - top);  // hidden until the reveal
+  const shown = RUNS.filter(([k]) => state.shown.has(k) && c.egos[k]);
+  const vmax = Math.max(5, ...shown.flatMap(([k]) => c.egos[k].v.slice(a0)));
+  ctx.font = font(11); ctx.textBaseline = "middle";
+  for (const v of [0, 0.5, 1]) {
+    ctx.strokeStyle = css("--line"); ctx.lineWidth = px(1); ctx.beginPath(); ctx.moveTo(Lm, Y(v)); ctx.lineTo(canvas.width - R, Y(v)); ctx.stroke();
+    ctx.fillStyle = css("--muted"); ctx.textAlign = "right"; ctx.fillText(`${v}`, Lm - px(6), Y(v));
+    ctx.textAlign = "left"; ctx.fillText(`${(v * vmax).toFixed(0)} m/s`, canvas.width - R + px(6), Y(v));
+  }
+  ctx.textBaseline = "alphabetic"; ctx.textAlign = "center";
+  for (let tt = Math.ceil(t0); tt <= t1 + 1e-9; tt += 1) {
+    ctx.strokeStyle = css("--line"); ctx.beginPath(); ctx.moveTo(X(tt), bottom); ctx.lineTo(X(tt), bottom + px(4)); ctx.stroke();
+    ctx.fillStyle = css("--muted"); ctx.fillText(`${tt > 0 ? "+" : ""}${tt}s`, X(tt), bottom + px(16));
+  }
+  for (const [k] of shown) {  // ego speeds
+    ctx.globalAlpha = state.focus && state.focus !== k && k !== "reference" ? .2 : 1;
+    ctx.beginPath(); c.egos[k].v.slice(a0).forEach((v, i) => { const x = X(c.times[a0 + i]), y = Y(v / vmax); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+    ctx.strokeStyle = color(k); ctx.lineWidth = px(k === "reference" ? 1.5 : 2); ctx.setLineDash(k === "reference" ? [px(4), px(3)] : []); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = css("--target"); ctx.lineWidth = px(2.2); ctx.beginPath(); let on = false;  // the target's visibility
+  c.visible.slice(a0).forEach((v, i) => { if (v === null) { on = false; return; } const x = X(c.times[a0 + i]), y = Y(v); on ? ctx.lineTo(x, y) : ctx.moveTo(x, y); on = true; });
+  ctx.stroke();
+  ctx.font = font(11); ctx.textAlign = "left";
+  let lastRight = -Infinity;
+  for (const [i, label, col] of [[a0, t("c_anchor"), css("--muted")], [fr, t("c_reveal"), css("--target")], [fc, t("c_contact"), css("--danger")]]) {
+    const x = X(c.times[i]); ctx.strokeStyle = col; ctx.lineWidth = px(1.2); ctx.beginPath(); ctx.moveTo(x, top - px(4)); ctx.lineTo(x, bottom); ctx.stroke();
+    const lx = Math.max(x + px(3), lastRight + px(6)); ctx.fillStyle = col; ctx.fillText(label, lx, top - px(8)); lastRight = lx + ctx.measureText(label).width;
+  }
+  ctx.fillStyle = css("--muted"); ctx.textAlign = "right"; ctx.fillText(t("c_legend"), canvas.width - R, top - px(8));
+  const x = X(c.times[state.frame]); ctx.strokeStyle = css("--accent"); ctx.lineWidth = px(2); ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke();
+}
+
+function statsHTML(rows) {
+  const n = rows.length, anti = rows.filter(r => r.test === "anticipation");
+  const pct = (a, b) => b ? `${Math.round(100 * a / b)}%` : "–";
+  const kpi = (v, label) => `<div class="kpi"><b>${v}</b><span>${label}</span></div>`;
+  const card = (title, note, body) => `<div class="scard"><h4>${title}</h4><p>${note}</p>${body}</div>`;
+  const runs = RUNS.filter(([k]) => k !== "reference").map(([k]) => [k, rows.filter(r => r.hits[k]).length]);
+  return `<h2>${t("st_title")}</h2><div class="muted">${t("st_intro", n)}</div><div class="kpis">` +
+    kpi(n, t("k_cases")) + kpi(new Set(rows.map(r => r.scene_id)).size, t("k_scenes")) + kpi(pct(anti.length, n), t("k_anti")) +
+    kpi(pct(anti.filter(r => r.hits.reactive_masked).length, anti.length), t("k_hit")) + `</div><div class="sgrid">` +
+    card(t("s_W"), t("s_W_note"), hist(rows.map(r => r.W), 0, 3, 12, " s")) +
+    card(t("s_runs"), t("s_runs_note"), bars(runs, n, runName, color)) + `</div>`;
+}
+function showStats(on) { $("statsview").hidden = !on; $("toggle-stats").setAttribute("aria-pressed", on); if (on) $("statsview").innerHTML = statsHTML(state.rows); }
+function showLeft(on) { $("app").classList.toggle("no-left", !on); $("toggle-left").setAttribute("aria-pressed", on); state.view = null; draw(); }
+function setLang(lang) { storeLanguage(lang); relabel(); legend(); refresh(); renderHelp(HELP[LANG], setLang); if (state.scene) { details(); runChips(); } draw(); }
+function step(d) { const k = state.rows.findIndex(r => r.i === state.i); const next = state.rows[Math.max(0, Math.min(state.rows.length - 1, k + d))]; if (next) select(next); }
+
+$("play").onclick = togglePlay;
+$("scrub").oninput = e => seek(+e.target.value);
+$("toggle-left").onclick = () => showLeft($("app").classList.contains("no-left"));
+$("toggle-stats").onclick = () => showStats($("statsview").hidden);
+$("toggle-help").onclick = () => showHelp($("help").hidden);
+$("toggle-lang").onclick = () => setLang(LANG === "zh" ? "en" : "zh");
+$("help").addEventListener("click", ev => { if (ev.target.id === "help" || ev.target.closest(".close")) showHelp(false); });
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !$("help").hidden) { showHelp(false); return; }
+  if (e.key === "?") { showHelp($("help").hidden); return; }
+  if (!$("help").hidden) return;
+  if (e.key === " ") { e.preventDefault(); togglePlay(); }
+  else if (e.key === "s") showStats($("statsview").hidden);
+  else if (e.key === "ArrowRight") seek(state.frame + 1);
+  else if (e.key === "ArrowLeft") seek(state.frame - 1);
+  else if (e.key === "ArrowDown") { e.preventDefault(); step(1); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); step(-1); }
+  else if (e.key === "[") showLeft($("app").classList.contains("no-left"));
+});
+bindMap($("bev"));
+LANG = savedLanguage(); applyLang(); renderHelp(HELP[LANG], setLang);
+initFilters(); legend(); refresh(); requestAnimationFrame(tick);
+if (state.rows.length) select(state.rows[0]);
+</script>
+</body>
+</html>

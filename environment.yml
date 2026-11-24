@@ -1,0 +1,143 @@
+# The Python environment OnCue runs in, managed by conda.
+#   conda env create -f environment.yml     then   conda activate oncue
+# Python and every package pinned, matching a GPU machine's base environment:
+# Python 3.10.19 and, for each package that environment has, its version (torch 2.8.0,
+# torchvision 0.23.0, scipy 1.13.1, protobuf 6.33.5, matplotlib 3.10.8, pillow 12.1.1, Cython
+# 3.2.4, einops 0.8.2, hf-xet 1.6.0, safetensors, regex), but numpy 2.2.6 and shapely 2.1.2, the
+# newest for Python 3.10 (its numpy 1.26.4 is ten times slower in float32 scalar arithmetic, its
+# shapely 2.0.7, with GEOS 3.11, makes generation 2.6 times slower); the others
+# at versions that install with these on Python 3.10. On that server the environment is a conda
+# clone of the base environment plus these pins (tools/setup_env.sh CLONE_FROM=...), so its CUDA
+# torch stays; elsewhere torch and torchvision are the CPU wheels (macOS: PyPI's own).
+# torch, tensorflow, torchvision, matplotlib and bezier are for the model and the planners;
+# tensorboard (with Markdown, Werkzeug and tensorboard-data-server; Markdown
+# 3.10.3 is the newest for Python 3.10) for the training's TensorBoard log. The last line (-e .)
+# installs OnCue itself.
+# MetaDrive (an ordinary pinned package, its source never edited) reads its assets only from its
+# own package folder; after creating the environment run
+#   python -m metadrive.pull_asset      (the 0.4.3 assets, about 170 MB)
+name: oncue
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10.19
+  - pip
+  - pip:
+      - absl-py==2.5.0
+      - astunparse==1.6.3
+      - bezier==2023.7.28
+      - certifi==2026.7.22
+      - charset-normalizer==3.5.2
+      - contourpy==1.3.2
+      - cycler==0.12.1
+      - Cython==3.2.4
+      - filelock==4.0.11
+      - flatbuffers==25.12.19
+      - fonttools==4.65.0
+      - fsspec==2026.9.0
+      - gast==0.7.0
+      - google-crc32c==1.9.0
+      - google-pasta==0.2.0
+      - grpcio==1.84.0
+      - h5py==3.14.0
+      - idna==3.20
+      - Jinja2==3.1.6
+      - keras==3.12.4
+      - kiwisolver==1.5.1
+      - libclang==18.1.1
+      - Markdown==3.10.3
+      - markdown-it-py==4.2.0
+      - MarkupSafe==3.0.4
+      - matplotlib==3.10.8
+      - mdurl==0.1.2
+      - ml_dtypes==0.5.4
+      - mpmath==1.3.0
+      - namex==0.1.0
+      - networkx==3.4.2
+      - numpy==2.2.6
+      - opt_einsum==3.4.0
+      - optree==0.20.0
+      - packaging==26.3
+      - pillow==12.1.1
+      - protobuf==6.33.5
+      - Pygments==2.21.0
+      - pyparsing==3.3.3
+      - python-dateutil==2.9.0.post0
+      - PyYAML==6.0.3
+      - requests==2.34.2
+      - rich==15.0.0
+      - scipy==1.13.1
+      - setuptools==84.0.0
+      - shapely==2.1.2
+      - six==1.17.0
+      - sympy==1.14.0
+      - tensorboard==2.21.0
+      - tensorboard-data-server==0.7.2
+      - tensorflow==2.21.0
+      - termcolor==3.3.0
+      - torch==2.8.0
+      - torchvision==0.23.0
+      - tqdm==4.70.1
+      - typing_extensions==4.16.0
+      - urllib3==2.8.0
+      - Werkzeug==3.1.9
+      - wheel==0.48.0
+      - wrapt==2.5.0
+      - ruff==0.16.10
+      # MetaDrive 0.4.3 at the commit OnCue was built against, and the packages it brought in
+      - metadrive-simulator @ git+https://github.com/metadriverse/metadrive@85e5dadc6c7436d324348f6e3d8f8e680c06b4db
+      - asttokens==3.0.2
+      - cloudpickle==3.1.2
+      - decorator==5.3.1
+      - exceptiongroup==1.3.1
+      - executing==2.3.0
+      - Farama-Notifications==0.0.6
+      - gymnasium==1.4.0
+      - ipython==8.39.0
+      - jedi==0.20.1
+      - lxml==6.1.3
+      - matplotlib-inline==0.2.2
+      - mediapy==1.2.7
+      - opencv-python==4.11.0.86
+      - panda3d-gltf==0.15.0
+      - panda3d-simplepbr==0.13.1
+      - Panda3D==1.10.16
+      - parso==0.8.7
+      - pexpect==4.9.0
+      - platformdirs==4.12.4
+      - progressbar==2.5
+      - prompt_toolkit==3.0.53
+      - psutil==7.2.2
+      - ptyprocess==0.7.0
+      - pure_eval==0.2.4
+      - pygame==2.6.1
+      - stack-data==0.6.3
+      - tomli==2.5.0
+      - traitlets==5.16.1
+      - wcwidth==0.9.4
+      - yapf==0.43.0
+      # LatentDriver's inference (planners/latentdriver): its pins but two, kept close:
+      # transformers 4.43.4 (its 4.42.4 requires numpy < 2), pytorch-lightning 2.4.0
+      # (its 2.3.3 imports pkg_resources, gone from setuptools 84); einops 0.8.2 (the server's
+      # base environment; it pins 0.8.0); tokenizers and huggingface_hub at what transformers
+      # 4.43.4 takes (the base environment's are too new); the rest pulled in
+      - aiohappyeyeballs==2.7.1
+      - aiohttp==3.14.5
+      - aiosignal==1.4.0
+      - async-timeout==5.0.1
+      - attrs==26.1.0
+      - einops==0.8.2
+      - frozenlist==1.8.0
+      - hf-xet==1.6.0
+      - huggingface_hub==0.36.2
+      - lightning-utilities==0.15.3
+      - multidict==7.1.0
+      - propcache==0.5.4
+      - pytorch-lightning==2.4.0
+      - regex==2026.9.29
+      - safetensors==0.8.0
+      - tokenizers==0.19.1
+      - torchmetrics==1.9.0
+      - transformers==4.43.4
+      - yarl==1.25.1
+      - -e .

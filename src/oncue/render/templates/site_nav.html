@@ -1,0 +1,21 @@
+<style>
+.site-nav{display:flex;gap:2px;align-items:center;font:12.5px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif}
+.site-nav a{color:inherit;text-decoration:none;padding:5px 10px;border-radius:999px;opacity:.75;white-space:nowrap}
+.site-nav a:hover{opacity:1;background:rgba(127,127,127,.15)}
+.site-nav a.on{opacity:1;font-weight:600;background:rgba(127,127,127,.18)}
+.site-nav .sep{width:1px;height:16px;background:currentColor;opacity:.2;margin:0 4px}
+</style>
+<!--script-->
+<script>
+(function () {
+  function sync() {
+    var lang = null;
+    try { lang = localStorage.getItem("oncue.lang"); } catch (e) {}
+    if (!lang) lang = "en";
+    document.querySelectorAll(".site-nav a").forEach(function (a) { a.textContent = a.dataset[lang] || a.dataset.en; });
+  }
+  sync();
+  addEventListener("click", function () { setTimeout(sync, 0); });
+  addEventListener("storage", sync);
+})();
+</script>

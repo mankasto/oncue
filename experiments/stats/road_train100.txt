@@ -1,0 +1,37 @@
+scenes 48826 (0 failed); frames from the anchor
+
+logged ego, scenes: 48826 (3956026 frames)
+value (constant, now)               valued      max      p99    p99.9   const@max   const@p99 const@p99.9 over now   inf mism.  max at
+offroad_m (OFFROAD_TOL_M 0.5)        48826   30.102   -0.196    0.340      30.102      -0.196       0.340       40     0     0  7461c10a008ef1d3
+own_lane_m (WRONG_WAY_TOL_M 0.424)    1491    3.990    1.061    2.212       2.190      -0.739       0.412       49     0     0  ab41fd7608b0b7b
+turn_deg (OPPOSING_DEG 160.5)        48418  179.993  127.591  159.571     179.993     127.591     159.571       49     0     0  3ecfb245408befad
+
+other moving vehicles (peak >= 1 m/s) in 48779 scenes (left out: 1485151 still, 451041 too short for a speed), tracks: 751291 (42123175 frames)
+value (constant, now)               valued      max      p99    p99.9   const@max   const@p99 const@p99.9 over now   inf mism.  max at
+offroad_m (OFFROAD_TOL_M 0.5)       751126   75.472   15.924   40.980      75.472      15.924      40.980    20450     0     0  de3fac056da82c72/1210
+own_lane_m (WRONG_WAY_TOL_M 0.424)   38044      inf    2.062      inf         inf       0.262         inf     6622  1135     0  bba93fa6e9c358fc/44
+turn_deg (OPPOSING_DEG 160.5)       733794  180.000  157.271  179.816     180.000     157.271     179.816     6622     0     0  260a9a9c017ac65c/4150
+
+of them logged over the whole future window (oncue stats' road users), tracks: 269000 (21795068 frames)
+value (constant, now)               valued      max      p99    p99.9   const@max   const@p99 const@p99.9 over now   inf mism.  max at
+offroad_m (OFFROAD_TOL_M 0.5)       268978   58.961    9.331   30.773      58.961       9.331      30.773     5591     0     0  9a6f162e2614a7d6/1542
+own_lane_m (WRONG_WAY_TOL_M 0.424)   15060      inf    1.888    8.308         inf       0.088       6.508     1995   212     0  702f32c822659c15/21
+turn_deg (OPPOSING_DEG 160.5)       265738  179.999  154.373  179.769     179.999     154.373     179.769     1995     0     0  c70bf5900c203279/44
+
+of them in a vehicle lane at every frame, tracks: 661089 (36606222 frames)
+value (constant, now)               valued      max      p99    p99.9   const@max   const@p99 const@p99.9 over now   inf mism.  max at
+offroad_m (OFFROAD_TOL_M 0.5)       661089   15.178   -0.025    1.768      15.178      -0.025       1.768     1449     0     0  154735b4770a8dc7/506
+own_lane_m (WRONG_WAY_TOL_M 0.424)   30943      inf    1.821      inf         inf       0.021         inf     4876  1062     0  bba93fa6e9c358fc/44
+turn_deg (OPPOSING_DEG 160.5)       661089  180.000  148.870  179.817     180.000     148.870     179.817     4876     0     0  260a9a9c017ac65c/4150
+
+moving logged cyclists (peak >= 1 m/s), tracks: 14879 (823151 frames)
+value (constant, now)               valued      max      p99    p99.9   const@max   const@p99 const@p99.9 over now   inf mism.  max at
+offroad_m (OFFROAD_TOL_M 0.5)        14865   58.645   14.221   36.956      58.645      14.221      36.956     4269     0     0  f448ece720c8bb2a/2034
+own_lane_m (WRONG_WAY_TOL_M 0.424)     980      inf    9.360      inf         inf       7.560         inf      394   133     0  bcc6bcf9f34b7519/146
+turn_deg (OPPOSING_DEG 160.5)        12454  179.997  179.195  179.968     179.997     179.195     179.968      394     0     0  74c67fc496e5bd36/277
+
+of them in a vehicle lane at every frame, tracks: 3331 (157010 frames)
+value (constant, now)               valued      max      p99    p99.9   const@max   const@p99 const@p99.9 over now   inf mism.  max at
+offroad_m (OFFROAD_TOL_M 0.5)         3331    1.281    0.229    0.946       1.281       0.229       0.946       19     0     0  901217d997671c5b/1312
+own_lane_m (WRONG_WAY_TOL_M 0.424)     299      inf    4.725      inf         inf       2.925         inf       82    15     0  9cbb0fbf992031d5/598
+turn_deg (OPPOSING_DEG 160.5)         3331  179.959  176.790  179.953     179.959     176.790     179.953       82     0     0  74e699579349e559/3583

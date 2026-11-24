@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oncue"
+version = "0.1.0"
+description = "OnCue: occlusion hazard scenarios with controlled reveal timing from real driving logs"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+dependencies = ["numpy>=1.24", "shapely>=2.1,<3", "scipy>=1.10"]
+
+[project.optional-dependencies]
+data = ["protobuf>=5.27", "google-crc32c>=1.5"]
+# tensorboard: the training's TensorBoard log (without it, the JSON log only)
+model = ["torch>=2.4", "tensorboard>=2.21"]
+dev = ["ruff>=0.9", "pre-commit>=4"]  # pre-commit: .pre-commit-config.yaml
+# the closed loop's simulator, pinned to the commit OnCue was built against (environment.yml)
+closedloop = ["metadrive-simulator @ git+https://github.com/metadriverse/metadrive@85e5dadc6c7436d324348f6e3d8f8e680c06b4db"]
+
+[project.scripts]
+oncue = "oncue.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"oncue.data" = ["schema/scenario.desc", "schema/provenance.json", "schema/LICENSE", "schema/protos/**/*.proto"]
+"oncue.render" = ["templates/*.html", "templates/*.css", "templates/*.js"]
+"oncue.models.datasets.waymo" = ["safeshift_scored.txt"]
+"oncue.planners.pdm" = ["LICENSE"]  # ported from tuplan_garage (Apache-2.0)
+"oncue.planners.latentdriver" = ["bert-mini/config.json", "original/LICENSE", "original/provenance.json", "original/configs/method/**/*.yaml"]  # LatentDriver (Apache-2.0)
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+extend-exclude = [  # vendored verbatim
+    "src/oncue/planners/latentdriver/original",
+]
+
+[tool.ruff.lint]
+# N: names; PLR2004: unnamed numbers in comparisons; C901: function complexity
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF", "N", "PLR2004", "C901"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+# MTR's own model code keeps MTR's writing (models/ = MTR plus minimal patches): its 0.5 thresholds
+"src/oncue/models/modeling/**" = ["N", "PLR2004", "C901"]
+# MTR's ops and our Triton kernel: Triton names compile-time block sizes BLOCK_K, BLOCK_D
+"src/oncue/models/ops/**" = ["N", "PLR2004", "C901"]
+# run in the baselines' Python 3.9 environment as the methods' own code (hashes in their outputs)
+"src/oncue/baselines/{common,sage,seal,goose}/*.py" = ["N", "PLR2004", "C901"]
+"src/oncue/baselines/king/run.py" = ["N", "PLR2004", "C901"]
+# LatentDriver's observation, ported as written
+"src/oncue/planners/latentdriver/observation.py" = ["N", "PLR2004", "C901"]

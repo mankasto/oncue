@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/waymo-research/waymo-open-dataset",
+  "commit": "99a4cb3ff07e2fe06c2ce73da001f850f628e45a",
+  "license": "Apache-2.0",
+  "entrypoint": "waymo_open_dataset/protos/scenario.proto",
+  "files_sha256": {
+    "waymo_open_dataset/protos/scenario.proto": "10fc630afdea2cbf487da4cdff8ef010a0b12b782cffbbca88abb4c9fe5dbc11",
+    "waymo_open_dataset/protos/map.proto": "880174ad592d67ba2af0c38534d059b45618570da63bb422b896bbabe7db34db",
+    "waymo_open_dataset/protos/compressed_lidar.proto": "1c575ab0ed0417ceda9dcf6e83f346a99d99d4736d8f7f051ee6b1f4880449b6",
+    "waymo_open_dataset/dataset.proto": "e2016198636fbc29e00e40f241c70803cd28aa417d5eb961f28ba41a7e52a0ec",
+    "waymo_open_dataset/protos/vector.proto": "f6e0e69c939b4cd60c82b692a54c30e2c51b7ccd4ea8bedef0942ebfdb1e102f",
+    "waymo_open_dataset/label.proto": "9151695b08990cb82ea46f3799ff86d97ff2c8781184a0e1bd200f9b5d751342",
+    "waymo_open_dataset/protos/keypoint.proto": "42caa02ab69e0b036d66c05f4977fc05925895dd5f3a44d2d2810c9be280a680",
+    "waymo_open_dataset/protos/camera_tokens.proto": "fc0738777f66d7fc294367114247dce9e84db4d14ea780de3482b1ccc7450f8a"
+  }
+}

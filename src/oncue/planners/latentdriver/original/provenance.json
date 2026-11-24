@@ -1,0 +1,31 @@
+{
+  "repository": "https://github.com/Sephirex-X/LatentDriver",
+  "commit": "721bd6e1f87373457b743d0e0a9606d4d0727b6f",
+  "license": "Apache-2.0",
+  "note": "LatentDriver's model code and its method config (src/policy/latentdriver, src/policy/commons, configs/method), and the same release's PlanT (src/policy/baseline, configs/method/planT.yaml, src/utils/discretizer.py, which it imports), unchanged: byte-identical to the commit's files. Only what inference imports, plus src/utils/iou.py, the rotated-box IoU its training loss imports (fine-tuning, oncue.finetune; its CUDA vertex sort, src/ops/sort_vertices, is replaced by planners/latentdriver/sort_vertices.py); the simulator (Waymax, JAX), the training data pipeline and the CUDA / Cython ops are left out. Never edit these files; adapt in our own code (planners/latentdriver/model.py, observation.py, planner.py, sort_vertices.py). It imports itself as the top-level package `src` (model.py puts this folder on sys.path).",
+  "files_sha256": {
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "configs/method/encoder/bert.yaml": "6a5bd3becd0c57026ac594eccfed01cc02154b2fddbf124f543528240b01ec07",
+    "configs/method/latentdriver.yaml": "cb7d468814d5ef7ae9523488b2a7198e6f4bec525c43c750d3be7e24bc87d0d2",
+    "configs/method/planT.yaml": "d23344ee21500e9d867076648658d54c79980399799af769e1e90e547cfc7533",
+    "configs/method/world/latent_world_model.yaml": "90675f241bd09eb9107a7d3bd23474ea5ba8d142e123f2a53ef42264df3d7dfb",
+    "src/policy/baseline/bc_baseline.py": "52b2f912c8c740fd4d862ca61da246df1a959840c105c0090b6ba6345d5a28d5",
+    "src/policy/baseline/mlp.py": "c5237bd401793c6ae715ac22fc88ec47a448bc4aa7acb694826b32cc94975e86",
+    "src/policy/commons/enc/__init__.py": "40414d4ab7e3dd4e3eed1f137ee7f2a08400285078d1c86cfb921338cfee9291",
+    "src/policy/commons/enc/bert.py": "81e069316af27e8051784e89d0a5a1728161c5bd41869c860144db89ccd6d5a6",
+    "src/policy/commons/optimzier.py": "499678c07ea694583693f75e1d3f237f94581e997108f017378339332c9270b2",
+    "src/policy/commons/scheduler.py": "fb018cc62fd62716cefe97179734a23a6cd314506ea36e8cd18df8c3c1801e94",
+    "src/policy/latentdriver/gpt2_model.py": "1df57a75c230a8b0a9b9d96e20d5bd37cc1a6deff412302e9b2d53f5cf22b13c",
+    "src/policy/latentdriver/lantentdriver_model.py": "947f44de23dd9c15296898cd6f193450357e739986a5f193c87d6ce41e419ddc",
+    "src/policy/latentdriver/loss/GMMloss.py": "8b67149c8634ed18124562b15472ebae749b69b306a274d1f93dc30bf57d209a",
+    "src/policy/latentdriver/loss/KLloss.py": "50550163b4bfe43a0d06d2aa7d42405f4d4ddc96d97d2a47a98384207ac23d37",
+    "src/policy/latentdriver/transformers/detr.py": "1a7799d57be237645a733e7fba4770589de67deb5387dfd071d95af8220eb7ee",
+    "src/policy/latentdriver/transformers/mpa_decoder.py": "d51fc8902ad2b041e44d29f3680652cff82ab711b83a96e004f7b5fd657f382c",
+    "src/policy/latentdriver/transformers/multi_head_attention.py": "0fca4640a980e47ef2060542a13a870a91b0967838c5bb497eefb0cc19ca224e",
+    "src/policy/latentdriver/transformers/utils.py": "4f839d448a5f7579189849f18ede6142b6d9c19bf90437d852b6cba853883efe",
+    "src/policy/latentdriver/world/__init__.py": "097833215924e2ee5069c776d49ca7bcc02cdea193447b96d2f884e1cfab230a",
+    "src/policy/latentdriver/world/latent_world_model.py": "30cf5447649b27768921f2baf0971fc273a167ea47b03135b1b6333d6859878b",
+    "src/utils/discretizer.py": "13dd3dc175aaaa24f188e522fa1ccc7eff39bf552c189f7c65f85a20de499114",
+    "src/utils/iou.py": "2ff3fce17e1c7fbca03386957f0b12fc8fe2f766abc9f39ac20804e578df696a"
+  }
+}
