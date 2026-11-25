@@ -79,7 +79,7 @@ nav.jump a { text-decoration: none; color: var(--text); background: var(--chip);
 nav.jump a:hover { background: var(--accent); color: var(--bg); }
 section { padding-top: 36px; }
 section[id] { scroll-margin-top: 90px; }
-h2 { font-size: 26px; margin: 0 0 18px; text-align: center; }
+h2 { font-size: 36px; margin: 0 0 22px; text-align: center; letter-spacing: -0.01em; }
 h2::after { content: ""; display: block; width: 44px; height: 3px; margin: 10px auto 0; border-radius: 2px;
   background: linear-gradient(90deg, var(--ego), var(--target)); }
 section.band { background: var(--soft); box-shadow: 0 0 0 100vmax var(--soft); clip-path: inset(0 -100vmax);
@@ -116,7 +116,14 @@ th.sortable:hover, th.sortable:focus-visible { color: var(--accent); outline: no
 figure.column { max-width: 480px; margin-left: auto; margin-right: auto; }
 .lead { color: var(--muted); }
 .result { margin-top: 30px; }
-.result h3 { font-size: 21px; margin: 0 0 6px; }
+.result h3 { font-size: 24px; margin: 0 0 12px; }
+.headline { display: grid; grid-template-columns: 290px 1fr; gap: 26px; align-items: center; margin: 0 0 18px; padding: 18px 24px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); }
+.headline .claim { margin: 0; font-size: 18px; }
+.key-number { display: block; font-size: 40px; font-weight: 800; line-height: 1.05; color: var(--accent); letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; white-space: nowrap; }
+.key-label { display: block; margin-top: 6px; font-size: 14px; color: var(--muted); }
+@media (max-width: 760px) { .headline { grid-template-columns: 1fr; gap: 10px; } .key-number { font-size: 34px; } }
 .claim { font-size: 17px; margin: 0 0 14px; }
 .chart-body { position: relative; }
 .chart-body svg { display: block; width: 100%; height: auto; }
@@ -311,7 +318,7 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 
   <div class="result">
   <h3>Temporal control</h3>
-  <p class="claim">On the Waymo Open Motion Dataset, 90.1–96.6% of valid trajectories meet both requested times within ±0.2&nbsp;s.</p>
+  <div class="headline"><div class="key-figure"><span class="key-number">90.1–96.6%</span><span class="key-label">meet both requested times</span></div><p class="claim">On the Waymo Open Motion Dataset, 90.1–96.6% of valid trajectories meet both requested times within ±0.2&nbsp;s.</p></div>
   <figure class="chart" id="chart-time-control">
     <div class="chart-body" role="img" aria-label="Exposure- and contact-time errors of valid outputs per target type, and window error by requested window"></div>
     <figcaption><b>Temporal control.</b> (a) Exposure and contact timing errors and percentages for valid outputs. Orange marks both errors within ±0.2&thinsp;s. Gray marks the 0.2&thinsp;s window tolerance. (b) Median window error with 10th to 90th percentile bands. Raw candidates are evaluated before checks at the first constructed start.</figcaption>
@@ -320,7 +327,7 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 
   <div class="result">
   <h3>Generator comparison</h3>
-  <p class="claim">OnCue matches the requested reaction window between them in 92.8% of shared vehicle requests versus at most 42.1% for adapted adversarial generators.</p>
+  <div class="headline"><div class="key-figure"><span class="key-number">92.8%</span><span class="key-label">match the requested window, vs at most 42.1%</span></div><p class="claim">OnCue matches the requested reaction window between them in 92.8% of shared vehicle requests versus at most 42.1% for adapted adversarial generators.</p></div>
   <p class="note"><b>Generator comparison.</b> OnCue achieves the highest window match, coverage, and masked PDM-Closed collision on 2,624 shared requests from 446 logs. Requests are selected from valid OnCue outputs. OnCue (rule) keeps its first candidate when none passes the hard checks (900 requests), so every method returns an output for each request. Blue shades mark the top three values across all rows, darkest first, with the best in bold.</p>
   <div class="table-wrap">
     <table data-sortable>
@@ -345,7 +352,7 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 
   <div class="result">
   <h3>Response time separates planner behavior</h3>
-  <p class="claim">Across matched cyclist encounters, longer windows lower PDM-Closed collision from 59.1% to 5.5%, while the learned planner LatentDriver shows the opposite trend.</p>
+  <div class="headline"><div class="key-figure"><span class="key-number">59.1% → 5.5%</span><span class="key-label">PDM-Closed collision as windows lengthen</span></div><p class="claim">Across matched cyclist encounters, longer windows lower PDM-Closed collision from 59.1% to 5.5%, while the learned planner LatentDriver shows the opposite trend.</p></div>
   <figure class="chart" id="chart-matched-windows">
     <div class="chart-body" role="img" aria-label="Masked target collision of three planners at reaction windows of 1, 2 and 3 seconds"></div>
     <figcaption><b>Response time separates planner behavior.</b> Target collision under masked observations. Each curve keeps situations complete at all windows, so counts differ by planner. Bands: pointwise 95% driving-episode bootstrap intervals.</figcaption>
@@ -365,7 +372,7 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 
   <div class="result">
   <h3>Planner adaptation</h3>
-  <p class="claim">OnCue demonstrations reduce LatentDriver target collision by 54.8 points on held-out Reactive tests, but reduce overall no-target progress by 12.7&nbsp;m.</p>
+  <div class="headline"><div class="key-figure"><span class="key-number">−54.8 points</span><span class="key-label">LatentDriver target collision</span></div><p class="claim">OnCue demonstrations reduce LatentDriver target collision by 54.8 points on held-out Reactive tests, but reduce overall no-target progress by 12.7&nbsp;m.</p></div>
   </div>
 
   <p class="lead">Section 4 of the paper and Appendices D to F give every experiment.</p>
