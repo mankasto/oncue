@@ -13,7 +13,7 @@
   --map: #ffffff; --ego: #2563eb; --target: #ea580c; --occluder: #5f8fb5; --other: #a9d3ea; --walker: #d6b48e;
   --lane: #bcc4cd; --road-line: #8c96a1; --yellow-line: #e0a40b; --edge: #3f4652; --median: #8f5f52; --cross: #f0f2f5; --good: #15803d; --warn: #b45309;
   --danger: #dc2626; --static: #ece7df;
-  --rank-one: #bdddf5; --rank-two: #dcecf9; --rank-three: #f0f6fc; /* the paper's top-three shades */
+  --rank-one: #d6e8f7; --rank-two: #e7f1fa; --rank-three: #f4f8fc; /* the paper's top-three shades, lightened */
   --hero-top: #fbe8dc; --shadow: 0 1px 2px rgba(28, 46, 62, .05), 0 6px 18px rgba(28, 46, 62, .07);
 }
 @media (prefers-color-scheme: dark) {
@@ -41,7 +41,7 @@ html { scroll-behavior: smooth; }
 body { margin: 0; background: linear-gradient(180deg, var(--hero-top) 0, var(--bg) 760px) no-repeat var(--bg); color: var(--text);
   font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
 main { max-width: 1080px; margin: 0 auto; padding: 0 16px 64px; }
-header { text-align: center; padding: 40px 0 20px; }
+header { text-align: center; padding: 28px 0 20px; }
 h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.2; margin: 0 0 14px; font-weight: 700; }
 .brand { color: #f25f37; }  /* the logo's orange */
 .authors { font-size: 17px; margin: 4px 0 2px; }
@@ -58,7 +58,7 @@ h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.2; margin: 0 0 14px; font
   font-size: 13.5px; line-height: 1.5; }
 .bibtex .copy { position: absolute; top: 10px; right: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--soft);
   color: var(--text); font: inherit; font-size: 13px; padding: 3px 10px; cursor: pointer; }
-.logo { display: block; width: min(420px, 80%); height: auto; margin: 0 auto 18px; }
+.logo { display: block; width: min(320px, 70%); height: auto; margin: 0 auto 14px; }
 .logo-dark { display: none; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .logo-light { display: none; }
   :root:not([data-theme="light"]) .logo-dark { display: block; } }
@@ -76,6 +76,7 @@ nav.jump a { text-decoration: none; color: var(--text); background: var(--chip);
   padding: 6px 16px; font-size: 14px; font-weight: 600; }
 nav.jump a:hover { background: var(--accent); color: var(--bg); }
 section { padding-top: 36px; }
+section[id] { scroll-margin-top: 90px; }
 h2 { font-size: 26px; margin: 0 0 18px; text-align: center; }
 h2::after { content: ""; display: block; width: 44px; height: 3px; margin: 10px auto 0; border-radius: 2px;
   background: linear-gradient(90deg, var(--ego), var(--target)); }
@@ -83,15 +84,17 @@ section.band { background: var(--soft); box-shadow: 0 0 0 100vmax var(--soft); c
   margin-top: 40px; padding-bottom: 36px; }
 h3 { font-size: 18px; margin: 28px 0 8px; }
 p { margin: 0 0 12px; }
-.abstract { max-width: 860px; margin: 0 auto; text-align: justify; }
+.abstract { max-width: 760px; margin: 0 auto; text-align: left; line-height: 1.75; }
 figure { margin: 18px 0 8px; }
 figure img { display: block; width: 100%; height: auto; background: #fff; border-radius: 10px;
   border: 1px solid var(--line); box-shadow: var(--shadow); }
 figcaption { color: var(--muted); font-size: 14.5px; margin-top: 8px; }
 figcaption b { color: var(--text); }
 .table-wrap { overflow-x: auto; margin: 14px 0 6px; border: 1px solid var(--line); border-radius: 10px; }
-table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
-th, td { padding: 7px 9px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { padding: 10px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--line); }
+.table-wrap td a { color: var(--text); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.table-wrap td a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 th:first-child, td:first-child { text-align: left; }
 thead th { background: var(--soft); font-weight: 600; }
 thead tr.groups th { text-align: center; border-bottom: 1px solid var(--line); }
@@ -238,16 +241,15 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
   <img class="logo logo-light" src="assets/logo.svg" alt="OnCue">
   <img class="logo logo-dark" src="assets/logo-dark.svg" alt="OnCue">
   <h1><span class="brand">OnCue</span>: Generating Safety-Critical Driving Scenarios<br>under Occlusion with Temporal Control</h1>
-  <!-- authors and affiliations as in the arXiv version -->
   <p class="authors">Kailang Ma<sup>1</sup>, Li Song<sup>2</sup>, Weining Ren<sup>3</sup>, Zirui Li<sup>4</sup>, Xianjie Dai<sup>1</sup>,
     Jingguang Li<sup>1</sup>, Zuyi Guo<sup>1</sup>, Benwang Chen<sup>1</sup>, Heye Huang<sup>1,*</sup></p>
   <p class="affiliations"><sup>1</sup>Korea Advanced Institute of Science and Technology &ensp; <sup>2</sup>Giga &ensp;
     <sup>3</sup>The Chinese University of Hong Kong &ensp; <sup>4</sup>Nanyang Technological University</p>
   <p class="affiliations"><sup>*</sup>Corresponding author</p>
   <div class="affil-logos">
-    <img src="assets/affiliation-kaist.svg" alt="KAIST" style="height: 56px">
-    <img src="assets/affiliation-cuhk.png" alt="The Chinese University of Hong Kong" style="height: 36px">
-    <img src="assets/affiliation-ntu.png" alt="Nanyang Technological University" style="height: 42px">
+    <img src="assets/affiliation-kaist.svg" alt="KAIST" style="height: 44px">
+    <img src="assets/affiliation-cuhk.png" alt="The Chinese University of Hong Kong" style="height: 44px">
+    <img src="assets/affiliation-ntu.png" alt="Nanyang Technological University" style="height: 44px">
   </div>
   <p class="links"><span class="button disabled">arXiv (coming soon)</span>
     <a class="button" href="https://github.com/mankasto/oncue">Code</a><a class="button" href="#bibtex">BibTeX</a></p>
