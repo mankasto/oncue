@@ -121,6 +121,9 @@ conda activate oncue
 python -m metadrive.pull_asset    # MetaDrive's assets, only for drawing runs in MetaDrive
 ```
 
+On macOS, NumPy 2.2 with Apple's Accelerate may print `RuntimeWarning: ... encountered in matmul`; the outputs are
+unaffected (generation and labels match those under NumPy 2.5, which prints no such warning).
+
 On a Linux machine, `bash tools/setup_env.sh` builds the same environment and checks it. Reading OnCue's outputs
 (the examples below) needs only five packages:
 
