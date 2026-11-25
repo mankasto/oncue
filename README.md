@@ -174,7 +174,7 @@ python -m oncue closedloop labels.jsonl scenes --spec pedestrian \
 - Every output has a `.settings.json` beside it with the settings and the md5 of its inputs; a rerun of the same
   command resumes it. `python -m oncue <command> --help` lists the options.
 
-`python -m oncue cases` and `python -m oncue site` draw the tests and runs as an offline web page. The parameter
+`python -m oncue cases` draws the tests and runs as an offline web page ([Browsing the tests](#browsing-the-tests)). The parameter
 values and where each comes from are in [PARAMETERS.md](PARAMETERS.md).
 
 <a name="testing-your-own-planner"></a>
@@ -219,6 +219,27 @@ python collision_rates.py ../closedloop.jsonl --planners cautious,pdm_closed
 The module is imported in every worker, so `--workers` works as for the built-in planners, and the output's settings
 record the planner's module and function. The no-target progress (`nominal_4s`) is computed for the built-in planners
 only.
+
+<a name="browsing-the-tests"></a>
+
+## 🔎 Browsing the tests
+
+`oncue cases` turns label and closed-loop outputs into an offline case browser: the tests with filters by target type,
+construction family, label and outcome, each replayed in its scene with the reference ego and every planner run, masked
+and unoccluded, and a timeline of target visibility and ego speed.
+
+```bash
+python -m oncue cases labels.jsonl --scenes scenes --spec pedestrian --closed closedloop.jsonl --out cases
+```
+
+Open `cases/index.html` in a browser; every file is local. `--per-kind N` keeps up to N tests per target type, site kind
+and label (4 by default). The cases are replayed from the scene shards, since the outputs keep outcomes, not
+trajectories. `python -m oncue site site --cases cases` puts the browser in a small site with a home page;
+[render/](src/oncue/render/README.md) has the details.
+
+<p align="center">
+  <img src="assets/figures/case_browser.png" width="100%" alt="OnCue case browser: test list with filters, a replayed scene, planner outcomes and a timeline of target visibility and ego speed">
+</p>
 
 ## 🧩 Examples
 
