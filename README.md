@@ -71,12 +71,12 @@ in the paper):
 
 | Method | W match (%) ↑ | Coverage (%) ↑ | PDM-Closed collision (%) ↑ | Adv. reward ↑ |
 | --- | ---: | ---: | ---: | ---: |
-| CAT | 26.8 | 57.5 | 19.4 | 0.943 |
-| KING | 42.1 | 57.3 | 12.0 | 0.707 |
-| GOOSE | 38.9 | 47.2 | 9.2 | 0.576 |
-| SEAL | 22.2 | 49.9 | 12.5 | 0.609 |
-| SAGE (w = 0.5) | 11.6 | 22.9 | 8.7 | 0.478 |
-| SAGE (w = 1.0) | 5.6 | 13.8 | 8.2 | 0.473 |
+| [CAT](https://github.com/metadriverse/cat) | 26.8 | 57.5 | 19.4 | 0.943 |
+| [KING](https://github.com/autonomousvision/king) | 42.1 | 57.3 | 12.0 | 0.707 |
+| [GOOSE](https://doi.org/10.1109/itsc58415.2024.10919498) | 38.9 | 47.2 | 9.2 | 0.576 |
+| [SEAL](https://github.com/cmubig/SEAL) | 22.2 | 49.9 | 12.5 | 0.609 |
+| [SAGE](https://github.com/tongnie/SAGE) (w = 0.5) | 11.6 | 22.9 | 8.7 | 0.478 |
+| [SAGE](https://github.com/tongnie/SAGE) (w = 1.0) | 5.6 | 13.8 | 8.2 | 0.473 |
 | OnCue (rule) | 81.7 | 86.7 | 22.9 | 1.076 |
 | **OnCue (model)** | **92.8** | **92.6** | **34.1** | **1.333** |
 
