@@ -17,12 +17,10 @@
   <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="Python 3.10+">
 </p>
 
-<table>
-  <tr>
-    <td width="57%"><img src="assets/figures/concept_a.png" width="100%" alt="The same logged scene with a hidden target under a longer and a shorter requested reaction window"></td>
-    <td width="43%"><img src="assets/figures/concept_b.png" width="100%" alt="Target and ego speeds under the same braking action from exposure"></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="assets/figures/concept_a.png" width="56%" alt="The same logged scene with a hidden target under a longer and a shorter requested reaction window">
+  <img src="assets/figures/concept_b.png" width="42%" alt="Target and ego speeds under the same braking action from exposure">
+</p>
 
 <p align="center"><sub><b>OnCue controls when a hidden hazard becomes visible.</b> (a) Two requests with the same
 reference contact and requested reaction windows W* = 2.0 s and 0.5 s. (b) Target and ego speeds under the same braking
@@ -63,12 +61,10 @@ Our contributions:
 **Temporal control.** On the Waymo Open Motion Dataset, 90.1% to 96.6% of valid trajectories meet both requested
 times within ±0.2 s.
 
-<table>
-  <tr>
-    <td width="56%"><img src="assets/figures/time_control_a.png" width="100%" alt="Exposure- and contact-time errors of valid outputs"></td>
-    <td width="44%"><img src="assets/figures/time_control_b.png" width="100%" alt="Window error by requested window, with medians and 10th to 90th percentile bands"></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="assets/figures/time_control_a.png" width="43%" alt="Exposure- and contact-time errors of valid outputs">
+  <img src="assets/figures/time_control_b.png" width="55%" alt="Window error by requested window, with medians and 10th to 90th percentile bands">
+</p>
 
 <p align="center"><sub>(a) Exposure and contact timing errors and percentages for valid outputs; orange marks both
 errors within ±0.2 s, gray the 0.2 s window tolerance. (b) Median window error with 10th to 90th percentile bands; raw
@@ -101,12 +97,10 @@ in the paper):
 LatentDriver target collision by 54.8 points on held-out Reactive tests, but reduce overall no-target progress by
 12.7 m.
 
-<table>
-  <tr>
-    <td width="50%"><img src="assets/figures/response_examples.png" width="100%" alt="Oracle action timing: the same braking action is safe from an earlier start and collides from exposure"></td>
-    <td width="50%"><img src="assets/figures/matched_windows.png" width="100%" alt="Target collision of each planner at reaction windows of 1, 2 and 3 s under masked observation"></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="assets/figures/response_examples.png" width="41%" alt="Oracle action timing: the same braking action is safe from an earlier start and collides from exposure">
+  <img src="assets/figures/matched_windows.png" width="57%" alt="Target collision of each planner at reaction windows of 1, 2 and 3 s under masked observation">
+</p>
 
 <p align="center"><sub>Left: <b>oracle action timing.</b> In (a, b), the same braking action is safe when started at
 t<sub>v</sub> (purple) and collides when started at exposure (blue); in (c), the post-exposure action is safe. Right:
