@@ -17,15 +17,6 @@
   <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="Python 3.10+">
 </p>
 
-<p align="center">
-  <img src="assets/figures/concept_a.png" width="56%" alt="The same logged scene with a hidden target under a longer and a shorter requested reaction window">
-  <img src="assets/figures/concept_b.png" width="42%" alt="Target and ego speeds under the same braking action from exposure">
-</p>
-
-<p align="center"><sub><b>OnCue controls when a hidden hazard becomes visible.</b> (a) Two requests with the same
-reference contact and requested reaction windows W* = 2.0 s and 0.5 s. (b) Target and ego speeds under the same braking
-from exposure E. Earlier exposure leaves time to slow before contact t*<sub>c</sub> (red line).</sub></p>
-
 > [!NOTE]
 > **News**
 > - **[2026/11]** Code released: test generation, response labeling and closed-loop planner evaluation on the
