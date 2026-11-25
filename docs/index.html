@@ -46,6 +46,8 @@ h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.2; margin: 0 0 14px; font
 .brand { color: #f25f37; }  /* the logo's orange */
 .authors { font-size: 17px; margin: 4px 0 2px; }
 .affiliations { color: var(--muted); font-size: 14.5px; margin: 2px 0; }
+.affil-logos { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 14px 34px; margin: 16px 0 6px; }
+.affil-logos img { width: auto; display: block; }
 .links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0 0; }
 .button { display: inline-block; padding: 7px 18px; border-radius: 999px; background: var(--text); color: var(--bg); text-decoration: none;
   font-weight: 600; font-size: 14.5px; }
@@ -242,6 +244,11 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
   <p class="affiliations"><sup>1</sup>Korea Advanced Institute of Science and Technology &ensp; <sup>2</sup>Giga &ensp;
     <sup>3</sup>The Chinese University of Hong Kong &ensp; <sup>4</sup>Nanyang Technological University</p>
   <p class="affiliations"><sup>*</sup>Corresponding author</p>
+  <div class="affil-logos">
+    <img src="assets/affiliation-kaist.svg" alt="KAIST" style="height: 56px">
+    <img src="assets/affiliation-cuhk.png" alt="The Chinese University of Hong Kong" style="height: 36px">
+    <img src="assets/affiliation-ntu.png" alt="Nanyang Technological University" style="height: 42px">
+  </div>
   <p class="links"><span class="button disabled">arXiv (coming soon)</span>
     <a class="button" href="https://github.com/mankasto/oncue">Code</a><a class="button" href="#bibtex">BibTeX</a></p>
   <p class="tldr"><b>TL;DR.</b> OnCue inserts occluded pedestrians, cyclists, and vehicles into real driving logs with requested exposure and reference-contact times, labels whether each encounter is avoidable after exposure or only with earlier visibility, and uses the encounters to evaluate and improve planners.</p>
@@ -276,10 +283,6 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 
 <section id="method" class="band">
   <h2>Method</h2>
-  <figure>
-    <img src="assets/method.png" alt="OnCue framework: geometry, conditional trajectory generation, oracle labeling and planner runs">
-    <figcaption><b>OnCue framework.</b> Timed conditions guide generation, followed by response labeling and planner evaluation.</figcaption>
-  </figure>
   <figure class="pipeline" id="pipeline">
     <div class="film-panel">
       <div class="film-picture"><canvas id="film-canvas" width="1600" height="900" tabindex="0" role="img" aria-label="How one OnCue test is built: contact point, exposure point, hidden starts with one second of history, ranking, generation, replay, response label and planner tests"></canvas><div id="film-loading" class="film-loading">Loading the scene</div></div>
@@ -292,6 +295,10 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
       <nav id="film-chapters" class="film-chapters" aria-label="Animation chapters"></nav>
       <span id="film-announcement" class="film-sr" aria-live="polite"></span>
     </div>
+  </figure>
+  <figure>
+    <img src="assets/method.png" alt="OnCue framework: geometry, conditional trajectory generation, oracle labeling and planner runs">
+    <figcaption><b>OnCue framework.</b> Timed conditions guide generation, followed by response labeling and planner evaluation.</figcaption>
   </figure>
 </section>
 

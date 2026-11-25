@@ -22,6 +22,12 @@
 <p align="center"><i><sup>&dagger;</sup>Corresponding author</i></p>
 
 <p align="center">
+  <img src="assets/figures/affiliation-kaist.svg" height="56" alt="KAIST">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/figures/affiliation-cuhk.png" height="36" alt="The Chinese University of Hong Kong">&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/figures/affiliation-ntu.png" height="42" alt="Nanyang Technological University">
+</p>
+
+<p align="center">
   <a href="#">Paper (arXiv, coming soon)</a> &nbsp;|&nbsp;
   <a href="https://mankasto.github.io/oncue/">Project page</a> &nbsp;|&nbsp;
   <a href="#installation">Installation</a> &nbsp;|&nbsp;
