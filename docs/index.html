@@ -169,20 +169,38 @@ canvas.scene { display: block; width: 100%; aspect-ratio: 16 / 10; border: 1px s
   background: var(--card); color: var(--text); font: inherit; font-size: 13px; cursor: pointer; font-variant-numeric: tabular-nums; }
 .cmp-caption { color: var(--muted); font-size: 14.5px; margin: 8px 0 0; }
 .pipeline { margin-top: 26px; }
-.pipe-panel { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: #fffdf9;
-  box-shadow: 0 12px 34px rgba(28,46,62,0.08); }
-.pipe-panel canvas { width: 100%; aspect-ratio: 16 / 9; display: block; cursor: pointer; }
-.pipe-progress { height: 2px; background: var(--line); position: relative; }
-.pipe-progress i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--accent); }
-.pipe-bar { display: flex; align-items: center; gap: 4px; padding: 8px 12px 10px; overflow-x: auto;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
-.pipe-bar button { font: inherit; background: none; border: 0; color: var(--muted); padding: 4px 7px; border-radius: 6px;
-  cursor: pointer; white-space: nowrap; }
-.pipe-bar button .n { opacity: 0.6; margin-right: 5px; }
-.pipe-bar button.on { color: var(--text); font-weight: 600; }
-.pipe-bar button.on .n { color: var(--accent); opacity: 1; }
-.pipe-bar .grow { flex: 1; }
-.pipe-bar .pipe-play { color: var(--text); }
+.film-panel { overflow: hidden; border-radius: 16px; border: 1px solid var(--line); background: #fffdf9; box-shadow: 0 12px 34px rgba(28,46,62,0.08); }
+.film-picture { position: relative; }
+.film-picture canvas { display: block; width: 100%; aspect-ratio: 16 / 9; background: #e5e2d8; cursor: pointer; }
+.film-loading { position: absolute; inset: 0; display: grid; place-items: center; background: #faf8f5; color: #7c8589; font-size: 13px; }
+.film-loading[hidden] { display: none; }
+.film-transport { display: flex; align-items: center; gap: 14px; height: 47px; padding: 0 18px; border-top: 1px solid #e9e3da; }
+.film-icon { border: 0; width: 28px; height: 28px; flex: none; display: grid; place-items: center; padding: 0; border-radius: 50%; cursor: pointer; background: transparent; color: var(--text); }
+.film-icon:hover { color: var(--accent); }
+.film-icon svg { width: 13px; height: 13px; }
+#film-play { background: var(--text); color: #fff; }
+#film-play:hover { background: var(--accent); }
+.film-time { font: 14px "Times New Roman", Times, serif; min-width: 92px; flex: none; color: #6f7a80; }
+.film-progress { appearance: none; -webkit-appearance: none; flex: 1; min-width: 30px; height: 25px; margin: 0; cursor: ew-resize; background: transparent; --p: 0%; }
+.film-progress::-webkit-slider-runnable-track { height: 3px; border-radius: 3px; background: linear-gradient(to right, var(--accent) var(--p), #e8e0d6 var(--p)); }
+.film-progress::-moz-range-track { height: 3px; background: #e8e0d6; }
+.film-progress::-moz-range-progress { height: 3px; background: var(--accent); }
+.film-progress::-webkit-slider-thumb { appearance: none; -webkit-appearance: none; width: 9px; height: 9px; border-radius: 50%; margin-top: -3px; background: var(--accent); }
+.film-progress::-moz-range-thumb { width: 9px; height: 9px; border: 0; border-radius: 50%; background: var(--accent); }
+.film-chapters { border-top: 1px solid #eee8e1; display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin: 0 16px; height: 40px; }
+.film-chapters button { position: relative; border: 0; cursor: pointer; font: 15px "Times New Roman", Times, serif; white-space: nowrap; color: #7b868c; background: none; padding: 0 2px; }
+.film-chapters button::before { content: ''; position: absolute; top: -1px; left: 2px; right: 2px; height: 2px; }
+.film-chapters button[aria-current="step"] { color: var(--accent); font-weight: 600; }
+.film-chapters button[aria-current="step"]::before { background: var(--accent); }
+.film-chapters .num { font-size: 12px; opacity: 0.65; margin-right: 5px; }
+.film-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 650px) {
+  .film-transport { height: 42px; padding: 0 10px; gap: 9px; }
+  .film-time { font-size: 12px; min-width: 74px; }
+  .film-chapters { margin: 0 6px; gap: 0; height: 34px; }
+  .film-chapters button { font-size: 11px; }
+  .film-chapters .num, #film-restart { display: none; }
+}
 .explorer-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
 .seg button { border: 0; background: var(--card); color: var(--text); font: inherit; font-size: 14px; padding: 6px 14px; cursor: pointer; }
@@ -263,10 +281,16 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
     <figcaption><b>OnCue framework.</b> Timed conditions guide generation, followed by response labeling and planner evaluation.</figcaption>
   </figure>
   <figure class="pipeline" id="pipeline">
-    <div class="pipe-panel">
-      <canvas id="pipe-anim" width="1000" height="562" role="img" aria-label="How one test is built: contact point, exposure point, hidden starts, generation, replay, response label and closed-loop test"></canvas>
-      <div class="pipe-progress"><i id="pipe-progress"></i></div>
-      <div class="pipe-bar"><div id="pipe-chips" style="display:flex;gap:2px"></div><span class="grow"></span><button class="pipe-play" id="pipe-play" type="button">&#10074;&#10074; Pause</button></div>
+    <div class="film-panel">
+      <div class="film-picture"><canvas id="film-canvas" width="1600" height="900" tabindex="0" role="img" aria-label="How one OnCue test is built: contact point, exposure point, hidden starts with one second of history, ranking, generation, replay, response label and planner tests"></canvas><div id="film-loading" class="film-loading">Loading the scene</div></div>
+      <div class="film-transport">
+        <button id="film-play" class="film-icon" type="button" aria-label="Pause animation"></button>
+        <input id="film-progress" class="film-progress" type="range" min="0" max="56" step="0.01" value="0" aria-label="Animation progress">
+        <span id="film-time" class="film-time">00:00 / 00:56</span>
+        <button id="film-restart" class="film-icon" type="button" aria-label="Restart animation"><svg viewBox="0 0 16 16" fill="none"><path d="M3 5a5.5 5.5 0 1 1-.2 5M3 1v4h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      </div>
+      <nav id="film-chapters" class="film-chapters" aria-label="Animation chapters"></nav>
+      <span id="film-announcement" class="film-sr" aria-live="polite"></span>
     </div>
   </figure>
   <figure>
@@ -374,8 +398,9 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
 <script src="assets/common.js"></script>
 <script src="assets/player.js"></script>
 <script>window.PIPELINE = {case: window.DEMO.families[0].case};</script>
-<script src="assets/pipeline-scene.js"></script>
-<script src="assets/pipeline.js"></script>
+<script src="assets/film.js"></script>
+<script src="assets/film-data.js"></script>
+<script src="assets/film-player.js"></script>
 <script>window.CHARTS = {"time_control":{"on_time_s":0.2,"requested_w":[0.5,1.0,1.5,2.0,2.5,3.0],"timing":{"pedestrian":{"on_time_pct":96.6,"outputs":26640,"points":[[-1.0,-0.8,1],[-0.6,-0.7,2],[-0.6,-0.4,2],[-0.5,-0.5,1],[-0.5,-0.4,1],[-0.5,-0.3,3],[-0.4,-0.5,3],[-0.4,-0.4,3],[-0.4,-0.3,1],[-0.4,-0.2,6],[-0.3,-0.5,5],[-0.3,-0.4,5],[-0.3,-0.3,6],[-0.3,-0.2,10],[-0.3,-0.1,70],[-0.2,-0.4,27],[-0.2,-0.3,15],[-0.2,-0.2,25],[-0.2,-0.1,174],[-0.2,0.0,161],[-0.1,-0.3,85],[-0.1,-0.2,175],[-0.1,-0.1,2279],[-0.1,0.0,2224],[-0.1,0.1,87],[0.0,-0.2,969],[0.0,-0.1,7481],[0.0,0.0,6857],[0.0,0.1,262],[0.0,0.2,121],[0.1,-0.1,2039],[0.1,0.0,2093],[0.1,0.1,168],[0.1,0.2,108],[0.1,0.3,93],[0.2,0.0,350],[0.2,0.1,96],[0.2,0.2,55],[0.2,0.3,62],[0.2,0.4,34],[0.3,0.1,61],[0.3,0.2,36],[0.3,0.3,28],[0.3,0.4,17],[0.3,0.5,14],[0.4,0.2,25],[0.4,0.3,17],[0.4,0.4,10],[0.4,0.5,16],[0.4,0.6,13],[0.5,0.3,21],[0.5,0.4,19],[0.5,0.5,15],[0.5,0.6,15],[0.5,0.7,20],[0.6,0.4,12],[0.6,0.5,16],[0.6,0.6,20],[0.6,0.7,15],[0.6,0.8,14],[0.7,0.5,4],[0.7,0.6,9],[0.7,0.7,12],[0.7,0.8,15],[0.7,0.9,8],[0.8,0.6,1],[0.8,0.7,5],[0.8,0.8,3],[0.8,0.9,3],[0.8,1.0,6],[0.9,0.8,2],[0.9,1.0,3],[0.9,1.1,1],[1.0,1.0,1],[1.0,1.1,1],[1.1,1.0,1],[1.2,1.3,2]]},"cyclist":{"on_time_pct":95.5,"outputs":12570,"points":[[-0.8,-0.7,1],[-0.8,-0.6,1],[-0.7,-0.6,2],[-0.7,-0.5,1],[-0.6,-0.6,2],[-0.6,-0.4,1],[-0.5,-0.7,3],[-0.5,-0.6,3],[-0.5,-0.5,5],[-0.5,-0.3,2],[-0.4,-0.6,2],[-0.4,-0.5,2],[-0.4,-0.4,4],[-0.4,-0.3,10],[-0.4,-0.2,6],[-0.3,-0.5,11],[-0.3,-0.4,13],[-0.3,-0.3,13],[-0.3,-0.2,16],[-0.3,-0.1,46],[-0.2,-0.4,31],[-0.2,-0.3,38],[-0.2,-0.2,34],[-0.2,-0.1,159],[-0.2,0.0,115],[-0.1,-0.3,190],[-0.1,-0.2,167],[-0.1,-0.1,973],[-0.1,0.0,773],[-0.1,0.1,33],[0.0,-0.2,1242],[0.0,-0.1,3631],[0.0,0.0,2668],[0.0,0.1,205],[0.0,0.2,35],[0.1,-0.1,1046],[0.1,0.0,691],[0.1,0.1,71],[0.1,0.2,27],[0.1,0.3,14],[0.2,0.0,74],[0.2,0.1,29],[0.2,0.2,26],[0.2,0.3,16],[0.2,0.4,7],[0.3,0.1,26],[0.3,0.2,12],[0.3,0.3,17],[0.3,0.4,7],[0.4,0.2,14],[0.4,0.3,11],[0.4,0.4,8],[0.4,0.5,2],[0.5,0.3,10],[0.5,0.4,6],[0.5,0.5,2],[0.5,0.6,3],[0.6,0.4,4],[0.6,0.5,1],[0.6,0.6,1],[0.6,0.8,1],[0.7,0.5,4],[0.7,0.6,1],[0.8,0.8,1]]},"vehicle":{"on_time_pct":90.1,"outputs":13572,"points":[[-2.6,-2.6,1],[-2.3,-2.2,1],[-2.2,-2.0,1],[-2.1,-2.1,1],[-2.0,-1.9,1],[-1.8,-1.6,1],[-1.5,-1.6,1],[-1.5,-1.4,1],[-1.5,-1.3,1],[-1.4,-1.6,1],[-1.4,-1.5,1],[-1.3,-1.5,1],[-1.3,-1.1,3],[-1.2,-1.4,1],[-1.2,-1.3,1],[-1.2,-1.1,1],[-1.1,-1.2,3],[-1.1,-1.0,1],[-1.0,-1.2,1],[-1.0,-0.9,1],[-1.0,-0.8,1],[-0.9,-1.1,1],[-0.9,-1.0,1],[-0.9,-0.8,3],[-0.9,-0.7,2],[-0.8,-1.0,1],[-0.8,-0.9,2],[-0.8,-0.8,1],[-0.8,-0.7,6],[-0.8,-0.6,7],[-0.7,-0.9,4],[-0.7,-0.8,4],[-0.7,-0.7,3],[-0.7,-0.6,3],[-0.7,-0.5,10],[-0.6,-0.8,4],[-0.6,-0.7,1],[-0.6,-0.6,4],[-0.6,-0.5,7],[-0.6,-0.4,14],[-0.5,-0.7,2],[-0.5,-0.6,6],[-0.5,-0.5,8],[-0.5,-0.4,16],[-0.5,-0.3,38],[-0.4,-0.6,3],[-0.4,-0.5,8],[-0.4,-0.4,8],[-0.4,-0.3,17],[-0.4,-0.2,106],[-0.3,-0.5,3],[-0.3,-0.4,5],[-0.3,-0.3,13],[-0.3,-0.2,61],[-0.3,-0.1,457],[-0.2,-0.4,10],[-0.2,-0.3,18],[-0.2,-0.2,72],[-0.2,-0.1,424],[-0.2,0.0,166],[-0.1,-0.3,19],[-0.1,-0.2,109],[-0.1,-0.1,797],[-0.1,0.0,330],[-0.1,0.1,78],[0.0,-0.2,378],[0.0,-0.1,4636],[0.0,0.0,2438],[0.0,0.1,503],[0.0,0.2,315],[0.1,-0.1,686],[0.1,0.0,553],[0.1,0.1,333],[0.1,0.2,232],[0.1,0.3,172],[0.2,0.0,82],[0.2,0.1,52],[0.2,0.2,45],[0.2,0.3,37],[0.2,0.4,37],[0.3,0.1,21],[0.3,0.2,14],[0.3,0.3,13],[0.3,0.4,10],[0.3,0.5,8],[0.4,0.2,11],[0.4,0.3,6],[0.4,0.4,11],[0.4,0.5,2],[0.4,0.6,3],[0.5,0.3,8],[0.5,0.4,4],[0.5,0.5,7],[0.5,0.6,5],[0.5,0.7,2],[0.6,0.4,4],[0.6,0.5,4],[0.6,0.6,3],[0.6,0.8,1],[0.7,0.5,4],[0.7,0.6,5],[0.7,0.7,2],[0.7,0.8,2],[0.7,0.9,1],[0.8,0.6,5],[0.8,0.7,2],[0.8,0.8,1],[0.8,0.9,2],[0.8,1.0,1],[0.9,0.7,2],[0.9,0.8,2],[0.9,1.0,1],[0.9,1.1,1],[1.0,0.8,1],[1.0,0.9,1],[1.0,1.0,3],[1.0,1.1,2],[1.0,1.2,1],[1.1,0.9,2],[1.1,1.1,2],[1.2,1.0,2],[1.2,1.2,1],[1.2,1.3,1],[1.2,1.4,1],[1.3,1.2,1],[1.4,1.6,1],[1.6,1.5,1],[1.6,1.6,1],[1.7,1.5,1],[1.8,1.7,1],[1.8,1.8,1],[1.9,1.7,1],[1.9,1.9,1],[2.4,2.6,1],[2.6,2.4,1]]}},"windows":{"pedestrian":[{"W":0.5,"selected":[0.0,0.0,0.2],"raw":[0.1,0.0,0.3]},{"W":1.0,"selected":[0.0,-0.2,0.1],"raw":[0.0,-0.1,0.3]},{"W":1.5,"selected":[-0.1,-0.2,0.1],"raw":[0.0,-0.2,0.2]},{"W":2.0,"selected":[-0.1,-0.2,0.1],"raw":[0.0,-0.2,0.2]},{"W":2.5,"selected":[-0.1,-0.2,0.1],"raw":[0.0,-0.2,0.2]},{"W":3.0,"selected":[-0.1,-0.2,0.0],"raw":[0.0,-0.2,0.2]}],"cyclist":[{"W":0.5,"selected":[0.1,0.0,0.1],"raw":[0.3,0.0,0.8]},{"W":1.0,"selected":[0.0,-0.1,0.1],"raw":[0.1,-0.1,0.7]},{"W":1.5,"selected":[-0.1,-0.2,0.1],"raw":[0.1,-0.2,0.6]},{"W":2.0,"selected":[-0.1,-0.2,0.1],"raw":[0.0,-0.3,0.6]},{"W":2.5,"selected":[-0.1,-0.2,0.0],"raw":[0.0,-0.3,0.5]},{"W":3.0,"selected":[-0.1,-0.2,0.0],"raw":[0.0,-0.4,0.5]}],"vehicle":[{"W":0.5,"selected":[0.0,-0.1,0.2],"raw":[-0.1,-0.3,0.1]},{"W":1.0,"selected":[0.0,-0.1,0.2],"raw":[0.0,-0.2,0.5]},{"W":1.5,"selected":[0.0,-0.1,0.2],"raw":[0.0,-0.2,0.3]},{"W":2.0,"selected":[0.0,-0.1,0.1],"raw":[0.0,-0.2,0.3]},{"W":2.5,"selected":[-0.1,-0.1,0.1],"raw":[0.0,-0.2,0.4]},{"W":3.0,"selected":[-0.1,-0.2,0.2],"raw":[0.0,-0.2,0.8]}]}},"matched_windows":[{"kind":"pedestrian","planner":"IDM-base","n":45,"estimates":[{"value":42.22222222222222,"lo":24.324324324324326,"hi":61.53846153846154},{"value":2.2222222222222223,"lo":0.0,"hi":7.142857142857142},{"value":0.0,"lo":0.0,"hi":13.718517153071252,"exact":{"events":0,"n":45.0,"units":25,"unit":"drive"}}]},{"kind":"pedestrian","planner":"PDM-Closed","n":33,"estimates":[{"value":66.66666666666666,"lo":45.45454545454545,"hi":87.87878787878788},{"value":21.21212121212121,"lo":6.0606060606060606,"hi":38.23529411764706},{"value":18.181818181818183,"lo":5.259784075573578,"hi":36.37121212121201}]},{"kind":"pedestrian","planner":"LatentDriver","n":44,"estimates":[{"value":88.63636363636364,"lo":75.0,"hi":100.0},{"value":90.9090909090909,"lo":80.3921568627451,"hi":100.0},{"value":95.45454545454545,"lo":89.36170212765957,"hi":100.0}]},{"kind":"cyclist","planner":"IDM-base","n":163,"estimates":[{"value":51.533742331288344,"lo":42.138364779874216,"hi":60.465464419997204},{"value":15.337423312883436,"lo":9.444182389937108,"hi":21.656050955414013},{"value":8.588957055214724,"lo":3.845541401273891,"hi":14.19753086419753}]},{"kind":"cyclist","planner":"PDM-Closed","n":110,"estimates":[{"value":59.09090909090909,"lo":48.30435417884279,"hi":69.72534885513838},{"value":19.090909090909093,"lo":11.504424778761061,"hi":27.358490566037734},{"value":5.454545454545454,"lo":0.9803921568627451,"hi":10.679611650485436}]},{"kind":"cyclist","planner":"LatentDriver","n":162,"estimates":[{"value":66.0493827160494,"lo":55.82786417463262,"hi":76.53648527484654},{"value":75.92592592592592,"lo":67.46952306266486,"hi":84.21052631578947},{"value":82.09876543209876,"lo":74.39024390243902,"hi":89.24103729504714}]},{"kind":"vehicle","planner":"IDM-base","n":80,"estimates":[{"value":92.5,"lo":84.61538461538461,"hi":98.59154929577466},{"value":0.0,"lo":0.0,"hi":9.739375591449196,"exact":{"events":0,"n":80.0,"units":36,"unit":"drive"}},{"value":0.0,"lo":0.0,"hi":9.739375591449196,"exact":{"events":0,"n":80.0,"units":36,"unit":"drive"}}]},{"kind":"vehicle","planner":"PDM-Closed","n":63,"estimates":[{"value":92.06349206349206,"lo":81.9672131147541,"hi":100.0},{"value":17.46031746031746,"lo":6.896551724137931,"hi":29.850746268656714},{"value":0.0,"lo":0.0,"hi":12.343611850026381,"exact":{"events":0,"n":63.0,"units":28,"unit":"drive"}}]},{"kind":"vehicle","planner":"LatentDriver","n":63,"estimates":[{"value":76.19047619047619,"lo":58.92857142857143,"hi":91.83673469387756},{"value":90.47619047619048,"lo":78.57142857142857,"hi":100.0},{"value":93.65079365079364,"lo":82.85714285714286,"hi":100.0}]}]};</script>
 <script src="assets/charts.js"></script>
 <script src="assets/explorer.js"></script>
