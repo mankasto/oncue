@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
-    <img src="assets/logo.svg" width="480" alt="OnCue">
+    <img src="assets/logo.svg" width="360" alt="OnCue">
   </picture>
 </p>
 
@@ -9,22 +9,15 @@
 
 <p align="center">
   Kailang Ma<sup>1</sup>, Li Song<sup>2</sup>, Weining Ren<sup>3</sup>, Zirui Li<sup>4</sup>, Xianjie Dai<sup>1</sup>,
-  Jingguang Li<sup>1</sup>, Zuyi Guo<sup>1</sup>, Benwang Chen<sup>1</sup>, Heye Huang<sup>1&dagger;</sup>
+  Jingguang Li<sup>1</sup>, Zuyi Guo<sup>1</sup>, Benwang Chen<sup>1</sup>, Heye Huang<sup>1&dagger;</sup><br>
+  <sub><sup>1</sup>Korea Advanced Institute of Science and Technology &nbsp;&nbsp; <sup>2</sup>Giga<br>
+  <sup>3</sup>The Chinese University of Hong Kong &nbsp;&nbsp; <sup>4</sup>Nanyang Technological University &nbsp;&nbsp; <sup>&dagger;</sup>Corresponding author</sub>
 </p>
 
 <p align="center">
-  <sup>1</sup> Korea Advanced Institute of Science and Technology<br>
-  <sup>2</sup> Giga<br>
-  <sup>3</sup> The Chinese University of Hong Kong<br>
-  <sup>4</sup> Nanyang Technological University
-</p>
-
-<p align="center"><i><sup>&dagger;</sup>Corresponding author</i></p>
-
-<p align="center">
-  <img src="assets/figures/affiliation-kaist.svg" height="56" alt="KAIST">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/figures/affiliation-cuhk.png" height="36" alt="The Chinese University of Hong Kong">&nbsp;&nbsp;&nbsp;&nbsp;
-  <img src="assets/figures/affiliation-ntu.png" height="42" alt="Nanyang Technological University">
+  <sup>1</sup>&nbsp;<img src="assets/figures/affiliation-kaist.svg" height="40" alt="KAIST">&nbsp;&nbsp;&nbsp;&nbsp;
+  <sup>3</sup>&nbsp;<img src="assets/figures/affiliation-cuhk.png" height="40" alt="The Chinese University of Hong Kong">&nbsp;&nbsp;&nbsp;&nbsp;
+  <sup>4</sup>&nbsp;<img src="assets/figures/affiliation-ntu.png" height="40" alt="Nanyang Technological University">
 </p>
 
 <p align="center">
