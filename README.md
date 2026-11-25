@@ -146,14 +146,16 @@ One validation shard and one target type, from the repository root:
 
 ```bash
 python -m oncue export $WOMD/validation.tfrecord-00012-of-00150 --out scenes
-python -m oncue generate scenes --spec pedestrian --model weights/trajectory_generator.pt --out generated.jsonl
+python -m oncue generate scenes --spec pedestrian --generators rule --out generated.jsonl
 python -m oncue label generated.jsonl scenes --spec pedestrian --out labels.jsonl
 python -m oncue closedloop labels.jsonl scenes --spec pedestrian \
   --planners reactive,conservative,occlusion_aware,pdm_closed --out closedloop.jsonl
 ```
 
 - `generate` builds requests from the scene geometry (hidden starts and timed waypoints) and keeps the trajectories
-  that pass the hard checks; `--generators rule` uses rule-based generation instead of the trajectory generator.
+  that pass the hard checks. `--generators rule` is rule-based generation, which needs no model; with a trained
+  trajectory generator, replace it with `--model weights/trajectory_generator.pt`, which runs the trajectory
+  generator and rule-based generation.
 - `label` runs the response oracle and stores the safe responses it finds.
 - `closedloop` replays each test with each planner, masked and unoccluded. Planners: `reactive`, `conservative` and
   `occlusion_aware` (the IDM variants), `pdm_closed`, `latentdriver` and `plant` (with their checkpoints in
