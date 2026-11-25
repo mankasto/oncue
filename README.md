@@ -1,4 +1,6 @@
-<h1 align="center">OnCue</h1>
+<p align="center">
+  <img src="assets/logo.png" width="480" alt="OnCue">
+</p>
 
 <h3 align="center">Generating Safety-Critical Driving Scenarios under Occlusion with Temporal Control</h3>
 

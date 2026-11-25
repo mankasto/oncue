@@ -8,7 +8,7 @@ from dataclasses import replace
 import numpy as np
 import shapely
 
-from ..core.config import DriverConfig
+from ..core.config import DriverConfig, ReferenceConfig
 from ..core.rules import lane_speed_limit, logged_path, traffic_rules
 from ..core.types import Scene
 from ..data.map_geometry import lane_continuation
@@ -18,25 +18,35 @@ from ..planners.driver import Drive, drive
 YIELD_GAP_S = 1.5
 
 
-def reference_settings(driver: DriverConfig) -> DriverConfig:
-    """Return the shared driver settings plus the reference ego's yield gap and ignore_behind."""
-    return replace(driver, yield_gap_s=YIELD_GAP_S, ignore_behind=True)
+def reference_settings(
+    driver: DriverConfig, reference: ReferenceConfig | None = None
+) -> DriverConfig:
+    """Return the shared driver settings plus the reference ego's yield gap and ignore_behind.
+
+    `reference` replaces the shared settings it sets (the sensitivity runs; none by default).
+    """
+    own = reference.overrides() if reference is not None else {}
+    return replace(driver, yield_gap_s=YIELD_GAP_S, ignore_behind=True, **own)
 
 
-def reference_driver() -> DriverConfig:
+def reference_driver(reference: ReferenceConfig | None = None) -> DriverConfig:
     """Return the reference ego's driver settings, the same for every target type."""
-    return reference_settings(DriverConfig())
+    return reference_settings(DriverConfig(), reference)
 
 
 def protocol_ego(
-    scene: Scene, target_id: str | None, cfg: DriverConfig, speed_limit: float | None = None
+    scene: Scene,
+    target_id: str | None,
+    cfg: DriverConfig,
+    speed_limit: float | None = None,
+    reference: ReferenceConfig | None = None,
 ) -> tuple[Scene, Drive]:
     """Return (scene with the ego replaced by the reference ego, its drive).
 
     The reference ego never perceives `target_id` (None: no target). Frames past its run are
     invalid.
     """
-    cfg = reference_settings(cfg)
+    cfg = reference_settings(cfg, reference)
     limit = lane_speed_limit(scene) if speed_limit is None else speed_limit
     rules = traffic_rules(scene, limit, cfg)
     ends_at = log_end_route(scene, cfg)

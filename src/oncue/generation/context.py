@@ -22,7 +22,7 @@ from .reference import protocol_ego
 
 def scene_context(scene: Scene, config: Config, driver: DriverConfig) -> SceneContext:
     limit = lane_speed_limit(scene)
-    reference, _ = protocol_ego(scene, None, driver, speed_limit=limit)
+    reference, _ = protocol_ego(scene, None, driver, speed_limit=limit, reference=config.reference)
     path = logged_path(scene)
     ego, anchor = reference.ego, scene.anchor
     sim = np.flatnonzero(ego.valid)

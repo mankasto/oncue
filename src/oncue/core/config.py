@@ -516,6 +516,26 @@ class SearchConfig:
 
 
 @dataclass(frozen=True)
+class ReferenceConfig:
+    """The reference ego's driver settings where they differ from the shared ones.
+
+    None keeps the shared value; only the reference-ego sensitivity runs set them.
+    """
+
+    desired_speed_factor: float | None = None
+    t_head_s: float | None = None
+
+    def __post_init__(self):
+        factor, headway = self.desired_speed_factor, self.t_head_s
+        _check(factor is None or 0 < factor <= 1, "reference desired speed factor in (0, 1]")
+        _check(headway is None or headway > 0, "reference time headway must be positive")
+
+    def overrides(self) -> dict:
+        """Return the settings this section sets, for `dataclasses.replace` on a DriverConfig."""
+        return {name: value for name, value in asdict(self).items() if value is not None}
+
+
+@dataclass(frozen=True)
 class Config:
     """Top-level configuration bundle; the field names also appear in config files."""
 
@@ -524,6 +544,7 @@ class Config:
     oracle: OracleConfig = field(default_factory=OracleConfig)
     search: SearchConfig = field(default_factory=SearchConfig)
     replay: ReplayConfig = field(default_factory=ReplayConfig)
+    reference: ReferenceConfig = field(default_factory=ReferenceConfig)
 
     def to_dict(self) -> dict:
         return asdict(self)

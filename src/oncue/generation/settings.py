@@ -33,7 +33,7 @@ def run_settings(
 ) -> dict:
     from ..oracle.responses import candidate_list, list_digest
 
-    driver = reference_driver()
+    driver = reference_driver(config.reference)
     cands = candidate_list(config.oracle.candidates)
     inputs = [str(path) for path in inputs]
     return jsonable(
@@ -147,7 +147,7 @@ def check_upstream(upstream: str | Path, spec_name: str, spec: TargetSpec, confi
             f"{upstream} was made on another replayed scene (replay settings {made}, given {given})"
         )
     made = settings.get("driver") or {}
-    given = json.loads(json.dumps(jsonable(reference_driver())))
+    given = json.loads(json.dumps(jsonable(reference_driver(config.reference))))
     if made != given:
         diff = sorted(k for k in set(made) | set(given) if made.get(k) != given.get(k))
         why = f"driver settings differ in {diff}" if made else "no driver settings recorded"
