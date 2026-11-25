@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="assets/logo.png" width="480" alt="OnCue">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+    <img src="assets/logo.svg" width="480" alt="OnCue">
+  </picture>
 </p>
 
 <h3 align="center">Generating Safety-Critical Driving Scenarios under Occlusion with Temporal Control</h3>
