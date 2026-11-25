@@ -16,7 +16,7 @@ import shapely
 import shapely.ops
 
 from ...core.types import FeatureKind, Scene
-from ...utils.geometry import MIN_LINE_POINTS, rotate, wrap_angle
+from ...utils.geometry import MIN_LINE_POINTS, cumulative_arc_length, rotate, wrap_angle
 
 ROUTE_CHUNKS, ROUTE_POINTS = 8, 16
 ROUTE_SPACING_M = 1.0  # the route's points are resampled this far apart
@@ -62,8 +62,7 @@ def route_chunks(
 
 def _resample(points: np.ndarray, step: float = ROUTE_SPACING_M) -> np.ndarray:
     """The polyline's points every `step` along it from its start (its two ends if shorter)."""
-    lengths = np.linalg.norm(np.diff(points, axis=0), axis=1)
-    arc = np.concatenate([[0], np.cumsum(lengths)])
+    arc = cumulative_arc_length(points)
     if arc[-1] < step:
         return points[[0, -1]] if len(points) >= MIN_LINE_POINTS else points
     stations = np.arange(0, arc[-1], step)
