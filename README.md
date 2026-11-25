@@ -8,6 +8,20 @@
 <h3 align="center">Generating Safety-Critical Driving Scenarios under Occlusion with Temporal Control</h3>
 
 <p align="center">
+  Kailang Ma<sup>1</sup>, Li Song<sup>2</sup>, Weining Ren<sup>3</sup>, Zirui Li<sup>4</sup>, Xianjie Dai<sup>1</sup>,
+  Jingguang Li<sup>1</sup>, Zuyi Guo<sup>1</sup>, Benwang Chen<sup>1</sup>, Heye Huang<sup>1&dagger;</sup>
+</p>
+
+<p align="center">
+  <sup>1</sup> Korea Advanced Institute of Science and Technology<br>
+  <sup>2</sup> Giga<br>
+  <sup>3</sup> The Chinese University of Hong Kong<br>
+  <sup>4</sup> Nanyang Technological University
+</p>
+
+<p align="center"><i><sup>&dagger;</sup>Corresponding author</i></p>
+
+<p align="center">
   <a href="#">Paper (arXiv, coming soon)</a> &nbsp;|&nbsp;
   <a href="https://mankasto.github.io/oncue/">Project page</a> &nbsp;|&nbsp;
   <a href="#installation">Installation</a> &nbsp;|&nbsp;
@@ -22,11 +36,11 @@
 </p>
 
 > [!NOTE]
-> **News**
+> **📢 News**
 > - **[2026/11]** Code released: test generation, response labeling and closed-loop planner evaluation on the
 >   Waymo Open Motion Dataset. The paper will be on arXiv soon.
 
-## Introduction
+## 💡 Introduction
 
 Occluded hazards challenge autonomous driving because visibility timing determines available avoidance actions.
 Existing scenario generators control hazard motion without jointly specifying exposure and reference-contact times.
@@ -51,7 +65,7 @@ Our contributions:
   <sub><b>OnCue framework.</b> Timed conditions guide generation, followed by response labeling and planner evaluation.</sub>
 </p>
 
-## Results
+## 📊 Results
 
 **Temporal control.** On the Waymo Open Motion Dataset, 90.1% to 96.6% of valid trajectories meet both requested
 times within ±0.2 s.
@@ -102,7 +116,9 @@ t<sub>v</sub> (purple) and collides when started at exposure (blue); in (c), the
 <b>response time separates planner behavior.</b> Target collision under masked observations; bands are pointwise 95%
 driving-episode bootstrap intervals.</sub></p>
 
-## Installation
+<a name="installation"></a>
+
+## 🛠️ Installation
 
 ```bash
 conda env create -f environment.yml
@@ -121,7 +137,7 @@ pip install numpy==2.2.6 scipy==1.13.1 shapely==2.1.2 protobuf==6.33.5 google-cr
 export PYTHONPATH=$PWD/src
 ```
 
-## Data and models
+## 📦 Data and models
 
 - **WOMD v1.3.1.** Download the scenario TFRecords from [waymo.com/open](https://waymo.com/open) under the dataset's
   license; OnCue reads them as they are.
@@ -132,7 +148,9 @@ export PYTHONPATH=$PWD/src
 - **Planner checkpoints.** LatentDriver and PlanT come from LatentDriver's release; IDM and PDM-Closed need none
   ([weights/README.md](weights/README.md)).
 
-## Generating, labeling and evaluating tests
+<a name="generating-labeling-and-evaluating-tests"></a>
+
+## 🚀 Generating, labeling and evaluating tests
 
 One validation shard and one target type, from the repository root:
 
@@ -158,13 +176,13 @@ python -m oncue closedloop labels.jsonl scenes --spec pedestrian \
 `python -m oncue cases` and `python -m oncue site` draw the tests and runs as an offline web page. The parameter
 values and where each comes from are in [PARAMETERS.md](PARAMETERS.md).
 
-## Examples
+## 🧩 Examples
 
 [examples/](examples/README.md) has three short scripts on OnCue's public modules: counting the tests of a label
 output by type, label and window; replaying one test with one planner; and collision rates by type, label and planner
 with 95% intervals.
 
-## Repository layout
+## 🗂️ Repository layout
 
 | Folder | What it holds |
 | --- | --- |
@@ -179,7 +197,9 @@ with 95% intervals.
 | `src/oncue/render` | Case viewer and offline site |
 | `examples/`, `tools/` | Example scripts; environment and training scripts |
 
-## Citation
+<a name="citation"></a>
+
+## 📝 Citation
 
 The citation will be updated with the arXiv version.
 
@@ -193,14 +213,14 @@ The citation will be updated with the arXiv version.
 }
 ```
 
-## Acknowledgements
+## 🙏 Acknowledgements
 
 OnCue builds on the [Waymo Open Motion Dataset](https://waymo.com/open), PDM-Closed from
 [tuplan_garage](https://github.com/autonomousvision/tuplan_garage), [LatentDriver](https://github.com/Sephirex-X/LatentDriver),
 [MTR](https://github.com/sshaoshuai/MTR) and [MetaDrive](https://github.com/metadriverse/metadrive); see
 [NOTICE.md](NOTICE.md) for the code included from them.
 
-## License
+## 📄 License
 
 OnCue is released under the Apache License 2.0 ([LICENSE](LICENSE)); the third-party code it includes keeps its own
 license ([NOTICE.md](NOTICE.md)).
