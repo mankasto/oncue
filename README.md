@@ -124,8 +124,8 @@ export PYTHONPATH=$PWD/src
 
 - **WOMD v1.3.1.** Download the scenario TFRecords from [waymo.com/open](https://waymo.com/open) under the dataset's
   license; OnCue reads them as they are.
-- **Trajectory generator.** The learned trajectory generator (`weights/trajectory_generator.pt`) is not distributed, because
-  WOMD's license does not allow sharing models trained on it. Train it with `tools/train.sh`
+- **Trajectory generator.** The learned trajectory generator (`weights/trajectory_generator.pt`) is not released with
+  the code. Train it with `tools/train.sh`
   ([weights/README.md](weights/README.md)), or use rule-based generation (`--generators rule`), which needs no
   model.
 - **Planner checkpoints.** LatentDriver and PlanT come from LatentDriver's release; IDM and PDM-Closed need none
@@ -202,3 +202,5 @@ OnCue builds on the [Waymo Open Motion Dataset](https://waymo.com/open), PDM-Clo
 
 OnCue is released under the Apache License 2.0 ([LICENSE](LICENSE)); the third-party code it includes keeps its own
 license ([NOTICE.md](NOTICE.md)).
+
+**Waymo Open Dataset.** This software was made using the Waymo Open Dataset, provided by Waymo LLC under the Waymo Dataset License Agreement for Non-Commercial Use, available at waymo.com/open/terms, and your access and use of such work are governed by the terms and conditions therein.

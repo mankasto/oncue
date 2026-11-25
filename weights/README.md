@@ -5,7 +5,7 @@ OnCue reads checkpoints from `weights/<file>`. None is distributed with the code
 
 | File | What it is | Where to get it | md5 |
 | --- | --- | --- | --- |
-| `trajectory_generator.pt` | The trajectory generator: the hidden target's trajectory from its start, route and timed waypoints. | Train it yourself (below); WOMD's license does not allow sharing models trained on it. | yours |
+| `trajectory_generator.pt` | The trajectory generator: the hidden target's trajectory from its start, route and timed waypoints. | Not released with the code; train it yourself (below). | yours |
 | `latentdriver_j3.ckpt` | LatentDriver with 3 decoder layers (their `lantentdriver_t2_J3.ckpt`). Planner `latentdriver`. | [LatentDriver's release](https://huggingface.co/Sephirex-x/LatentDriver/tree/main/checkpoints) | `690e4e446c9fc11b963f286e36cccdfc` |
 | `plant.ckpt` | PlanT retrained in Waymax (their `planT.ckpt`). Planner `plant`. | [LatentDriver's release](https://huggingface.co/Sephirex-x/LatentDriver/tree/main/checkpoints) | `29de5d1a24921ea0a6ea43b1dcbb962f` |
 
