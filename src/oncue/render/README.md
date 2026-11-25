@@ -1,7 +1,7 @@
 # render
 
 Offline HTML pages of OnCue's outputs: the case browser (`oncue cases`), which replays chosen
-tests with the reference ego and every planner run, and a small site around it (`oncue site`).
+tests with the reference ego and the three IDM planners, and a small site around it (`oncue site`).
 Every file of a built page is local, so it opens straight from disk. Start from `render_cases`
 in `cases.py`.
 
@@ -13,10 +13,11 @@ oncue site DIR --cases CASES_DIR [--results RUN_DIR] [--explained PAGE.html]
 ```
 
 - `cases` picks up to `--per-kind` tests (default `CASES_PER_KIND`, 4) per target type, site
-  kind and label, the most telling first; `--closed` supplies their closed-loop records, which
-  rank them and show each planner's outcome. It replays the picked tests from `--scenes`, since
-  the outputs keep outcomes, not trajectories, so the scene shards the labels were made on are
-  needed. `--workers` sets the processes that replay them (default `WORKERS`, 4).
+  kind and label, the most telling first; `--closed` supplies closed-loop records, which only
+  rank the tests. It then replays the picked tests from `--scenes` with the planners in
+  `CASE_PLANNERS` (IDM-base, IDM-conservative, IDM-occlusion-aware), masked and unoccluded,
+  since the outputs keep outcomes, not trajectories; PDM-Closed, the learned planners and outside
+  planners are not replayed. `--workers` sets the processes that replay them (default `WORKERS`, 4).
 - `site` copies a built case browser into a site with a home page; `--results` takes the
   home page's numbers from a run folder's analyze tables (left out without it), and
   `--explained` adds a method page.

@@ -225,8 +225,9 @@ only.
 ## 🔎 Browsing the tests
 
 `oncue cases` turns label and closed-loop outputs into an offline case browser: the tests with filters by target type,
-construction family, label and outcome, each replayed in its scene with the reference ego and every planner run, masked
-and unoccluded, and a timeline of target visibility and ego speed.
+construction family, label and outcome, each replayed in its scene with the reference ego and the three IDM planners,
+masked and unoccluded, and a timeline of target visibility and ego speed. The closed-loop outputs only rank the tests;
+PDM-Closed, the learned planners and outside planners are not replayed in the browser.
 
 ```bash
 python -m oncue cases labels.jsonl --scenes scenes --spec pedestrian --closed closedloop.jsonl --out cases
