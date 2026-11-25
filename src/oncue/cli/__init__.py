@@ -12,7 +12,7 @@ if TYPE_CHECKING:  # annotations only
     from collections.abc import Sequence
     from types import ModuleType
 
-# `oncue --help` lists commands in this order; experiment commands live in `python -m experiments`
+# `oncue --help` lists commands in this order
 COMMAND_MODULES = (
     model,
     web,
@@ -27,7 +27,7 @@ def main(
     command_modules: Sequence[ModuleType] = COMMAND_MODULES,
     prog: str = "oncue",
 ) -> None:
-    """Parse ``argv`` and run the named command. Reused by ``experiments/cli`` with its own set."""
+    """Parse ``argv`` and run the named command."""
     args = build_parser(command_modules, prog).parse_args(argv)
     args.handler(args)
 

@@ -122,7 +122,7 @@ def home_claims(results: str | Path) -> tuple[list[tuple[str, str, str]], str | 
         _masked_against_see(tables["closedloop"]),
         _progress_kept(tables["closedloop"]),
     ]
-    stamp = Path(results) / "commit"  # written by experiments/run_all.sh
+    stamp = Path(results) / "commit"  # a run's commit stamp, if its runner wrote one
     commit = stamp.read_text().strip() if stamp.exists() else None
     return [claim for claim in claims if claim is not None], commit
 

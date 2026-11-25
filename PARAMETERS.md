@@ -5,7 +5,8 @@ A `Config` field (`Class.field` below, in `src/oncue/core/config.py`) can be ove
 `oncue --config FILE`; a module constant (an UPPER_CASE name) is fixed in the code, and the
 `.settings.json` of every output records the ones the pipeline depends on
 (`generation.settings.constants`), so a run resumes only under the same values.
-Paths are under `src/oncue/` unless they start with `experiments/` or `tools/`. A source left
+Paths are under `src/oncue/` unless they start with `experiments/` (the paper's experiment code,
+not part of this release) or `tools/`. A source left
 blank is a design choice with no recorded measurement behind it.
 
 Log statistics come from `oncue stats` (`data/stats.py`) on the whole WOMD v1.3.1 training set:

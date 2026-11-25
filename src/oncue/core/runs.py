@@ -247,7 +247,7 @@ def error_scenes(path: str | Path) -> int:
     """Return how many output lines carry an error (`line_has_error`)."""
     failed = 0
     for line in Path(path).read_text().splitlines():
-        if '"error' not in line:  # most lines: no need to parse ("error", "nominal_errors")
+        if '"error' not in line and '"nominal_errors"' not in line:  # most lines: no need to parse
             continue
         failed += line_has_error(json.loads(line))
     return failed

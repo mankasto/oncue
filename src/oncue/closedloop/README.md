@@ -21,10 +21,8 @@ oncue closedloop LABELLED SCENES... --out OUT.jsonl --spec SPEC
   MetaDrive only to draw them.
 - It resumes scene by scene.
 
-`python -m experiments logs-closedloop` and `oncue baseline closedloop` reuse the parts in
-`scene.py`, as do the case pages, which the code-and-results release leaves out.
-`experiments/run_shards.py` runs this package in the `closedloop`, `screening`, `screening-others`,
-`logs-closedloop` and `baselines-closedloop` stages.
+The case pages (`oncue cases`, `oncue site`) reuse the parts in `scene.py`. An outside planner
+joins with `--planner-module` (see the main README and `examples/my_planner.py`).
 
 ## Files
 

@@ -220,8 +220,8 @@ def mean_difference(
     )
 
 
-def planners_in(rows: list[tuple[str, dict]]) -> list[str]:
-    """Return the sorted planners that have at least one run across these rows."""
+def planners_in(rows: Iterable[dict]) -> list[str]:
+    """Return the sorted planners that have at least one run across these output rows."""
     return sorted({planner_of(name) for row in rows for name in row["closed_loop"]})
 
 

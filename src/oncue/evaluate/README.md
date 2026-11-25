@@ -1,9 +1,8 @@
 # evaluate
 
 What the experiments' analysis code shares: 95 % intervals with the drive as the unit, how the
-rows of the outputs are read, and how a table is shown and written. The tables, test lists and
-figures themselves are in [experiments/](../../../experiments/README.md)
-(`python -m experiments`). Start from `outputs.py`, then `rates.py`.
+rows of the outputs are read, and how a table is shown and written. Start from `outputs.py`, then
+`rates.py`.
 
 ## Files
 
@@ -23,5 +22,4 @@ figures themselves are in [experiments/](../../../experiments/README.md)
 
 ## Dependencies
 
-Imports `utils/`, `core/`, `data/`, `generation/` and `closedloop/`. Only experiments/ imports
-it; nothing in `src/` imports experiments/.
+Imports `utils/`, `core/`, `data/`, `generation/` and `closedloop/`.

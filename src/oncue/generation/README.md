@@ -18,8 +18,7 @@ Start from `pipeline.py`.
   ablation), `--raw-candidates N`, `--device` (`cpu` by default, `cuda`, `cuda:N`, `mps`).
 - `label` options: `--budget N` sets the oracle budget.
 - Both commands resume: scenes already in the output are skipped. A resumed run whose settings,
-  code or inputs changed stops.
-- `experiments/run_shards.py` runs them as the `generate`, `label` and `ablation` stages.
+  recorded constants or inputs changed stops.
 
 ## Files
 

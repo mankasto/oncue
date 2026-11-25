@@ -15,7 +15,12 @@ from pathlib import Path
 from oncue.evaluate import output_rows
 
 # the paper's names of the labels an `oncue label` output gives
-LABEL_NAMES = {"reaction": "Reactive", "anticipation": "Anticipatory", "unresolved": "unresolved"}
+LABEL_NAMES = {
+    "reaction": "Reactive",
+    "anticipation": "Anticipatory",
+    "unresolved": "unresolved",
+    "not_judged": "not judged",
+}
 
 
 def main() -> None:

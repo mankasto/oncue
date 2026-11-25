@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build OnCue's environment for experiments/run_all.sh, once, on a Linux x86_64 machine.
+# Build OnCue's environment, once, on a Linux x86_64 machine.
 # Installs environment.yml's Python and pins and pulls MetaDrive's assets.
 #   bash tools/setup_env.sh [ENV]        (from the code folder; about 15 min)
 #
@@ -12,7 +12,7 @@
 #   CLONE_FROM=SRC   a clone of the conda environment SRC (e.g. one with CUDA torch), with
 #                    environment.yml's pins installed into the clone; SRC is not changed
 #
-# Paths come from the environment, as in experiments/run_all.sh:
+# Paths come from the environment:
 #   ONCUE_HOME  work folder (default this repository); downloads go into ONCUE_HOME/.cache
 #   CONDA_ROOT  where Miniforge goes when there is no conda (default ONCUE_HOME/miniforge3)
 set -euo pipefail

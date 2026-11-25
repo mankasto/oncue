@@ -14,7 +14,7 @@ from .rates import MIN_LOGS
 if TYPE_CHECKING:  # import only for type hints
     from collections.abc import Sequence
 
-# Columns ``python -m experiments analyze`` prints per table; the JSON keeps every field.
+# Columns printed per table; the JSON keeps every field.
 SHOWN = {
     "generation": (
         "run",
@@ -180,7 +180,7 @@ SHOWN = {
         "WD_yaw_rate_crossing",
         "rows_lacking",
     ),
-    # Fixed target timetable (experiments/e6_closed_loop/fixed_timing.py).
+    # Fixed target timetable.
     "fixed_timing": (
         "group",
         "planner",

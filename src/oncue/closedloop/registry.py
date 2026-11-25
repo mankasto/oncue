@@ -1,10 +1,12 @@
 """Registered closed-loop planners: ``PLANNERS`` maps a name to its drive function and options.
 
-``DEFAULT_PLANNERS`` run when none are named; ``register`` adds a planner.
+``DEFAULT_PLANNERS`` run when none are named; ``register`` adds a planner, and
+``import_planner_modules`` imports modules that register their own (``--planner-module``).
 """
 
 from __future__ import annotations
 
+import importlib
 from dataclasses import replace
 from typing import TYPE_CHECKING
 
@@ -24,7 +26,7 @@ from ..planners.pdm.planner import OFFSET_RAMP_S, PDMClosedPlanner, PDMConfig
 from .execution import executed
 
 if TYPE_CHECKING:  # annotations only
-    from collections.abc import Callable
+    from collections.abc import Callable, Sequence
     from typing import Any
 
     from ..core.config import DriverConfig
@@ -386,3 +388,13 @@ def register(name: str, fn: Callable[..., ego_driver.Drive], options: dict | Non
     ``fn(scene, target_id, cfg, **options)`` returns a ``planners.driver.Drive``.
     """
     PLANNERS[name] = (fn, options or {})
+
+
+def import_planner_modules(modules: Sequence[str]) -> None:
+    """Import each named module; a module registers its planners with ``register`` when imported.
+
+    The closed loop does this in its own process and in every worker, so a planner outside the
+    package runs like a built-in one.
+    """
+    for module in modules:
+        importlib.import_module(module)

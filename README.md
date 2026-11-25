@@ -26,6 +26,7 @@
   <a href="https://mankasto.github.io/oncue/">Project page</a> &nbsp;|&nbsp;
   <a href="#installation">Installation</a> &nbsp;|&nbsp;
   <a href="#generating-labeling-and-evaluating-tests">Quick start</a> &nbsp;|&nbsp;
+  <a href="#testing-your-own-planner">Your planner</a> &nbsp;|&nbsp;
   <a href="#citation">Citation</a>
 </p>
 
@@ -176,11 +177,54 @@ python -m oncue closedloop labels.jsonl scenes --spec pedestrian \
 `python -m oncue cases` and `python -m oncue site` draw the tests and runs as an offline web page. The parameter
 values and where each comes from are in [PARAMETERS.md](PARAMETERS.md).
 
+<a name="testing-your-own-planner"></a>
+
+## 🧪 Testing your own planner
+
+A planner is a class that the closed loop builds once per run and steps every 0.1 s;
+[examples/my_planner.py](examples/my_planner.py) is a complete template.
+
+- `__init__(scene, target_id, cfg, perception, v_des, rules)`: the logged scene, the target's id, the driver
+  settings, the planner's perception, its desired speed and the traffic rules on its route.
+- `state()`: the ego's state `(x, y, heading, speed)` at the test's start.
+- `step(frame, ego_states, scene, beliefs)`: the state the planner wants one frame later; the same vehicle model and
+  tracker as for the built-in planners execute it. `beliefs.states` maps each road user the ego knows to its state;
+  under masked observation those are only the ones the ego has seen.
+- After the run the closed loop reads `stations`, `speeds` and `accels` (one per step; `planners.step_records.StepRecords`
+  keeps them) and `target_brake_s`, the first time the planner braked for the target (or `None`).
+
+A module registers the planner under a name:
+
+```python
+from oncue.closedloop.execution import executed
+from oncue.closedloop.registry import register, run_planner
+
+
+def drive_mine(scene, target_id, cfg, **options):
+    return run_planner(scene, target_id, cfg, executed(MyPlanner), **options)
+
+
+register("mine", drive_mine)
+```
+
+Name that module with `--planner-module` and the planner with `--planners`, next to the built-in ones:
+
+```bash
+cd examples
+python -m oncue closedloop ../labels.jsonl ../scenes --spec pedestrian \
+  --planner-module my_planner --planners cautious,pdm_closed --out ../closedloop.jsonl
+python collision_rates.py ../closedloop.jsonl --planners cautious,pdm_closed
+```
+
+The module is imported in every worker, so `--workers` works as for the built-in planners, and the output's settings
+record the planner's module and function. The no-target progress (`nominal_4s`) is computed for the built-in planners
+only.
+
 ## 🧩 Examples
 
 [examples/](examples/README.md) has three short scripts on OnCue's public modules: counting the tests of a label
 output by type, label and window; replaying one test with one planner; and collision rates by type, label and planner
-with 95% intervals.
+with 95% intervals. It also holds the planner template, `my_planner.py`.
 
 ## 🗂️ Repository layout
 

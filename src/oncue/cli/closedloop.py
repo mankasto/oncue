@@ -25,6 +25,14 @@ def add_parsers(subcommands: argparse._SubParsersAction) -> None:
         "closedloop.registry.DEFAULT_PLANNERS)",
     )
     parser.add_argument(
+        "--planner-module",
+        action="append",
+        default=[],
+        metavar="MODULE",
+        help="a module that registers planners when imported (closedloop.registry.register), "
+        "imported here and in every worker; repeat for several",
+    )
+    parser.add_argument(
         "--fixed", action="store_true", help="fixed timing for standing targets too"
     )
     parser.add_argument(
@@ -69,6 +77,7 @@ def run_closedloop(args: argparse.Namespace) -> None:
         world=args.world,
         modes=args.modes.split(","),
         tests=chosen(args.tests),
+        planner_modules=args.planner_module,
         **given(parts=args.parts, jerk_max=args.jerk_max),
     )
     print(f"{written} scenes written to {args.out}")

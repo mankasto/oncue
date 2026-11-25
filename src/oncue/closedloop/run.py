@@ -17,7 +17,7 @@ from ..generation.label import usable
 from ..generation.settings import check_upstream, run_settings
 from ..generation.targets import SPECS
 from ..utils.parallel import run_jobs
-from .registry import DEFAULT_PLANNERS, PLANNERS, planner_weights
+from .registry import DEFAULT_PLANNERS, PLANNERS, import_planner_modules, planner_weights
 from .scene import (
     MODES,
     ROW_FIELDS,
@@ -54,6 +54,7 @@ def run(
     modes: Sequence[str] = tuple(MODES),
     tests: tuple[str, ...] | None = TESTS,
     jerk_max: float | None = None,
+    planner_modules: Sequence[str] = (),
 ) -> int:
     """Run the closed loop on every usable sample of a label output, one line per scene.
 
@@ -67,11 +68,17 @@ def run(
         world: ``"replay"`` or ``"metadrive"``.
         tests: labels to run; None runs every usable sample.
         jerk_max: the planners' jerk limit; the reference ego keeps the ``DriverConfig`` one.
+        planner_modules: modules to import first, here and in every worker; each registers its
+            planners (``registry.register``), which ``planners`` may then name.
 
     Returns:
         The number of scene lines written.
     """
     world_class(world)  # an unknown world or mode fails now, not inside every scene
+    import_planner_modules(planner_modules)
+    unknown = [name for name in planners or DEFAULT_PLANNERS if name not in PLANNERS]
+    if unknown:
+        raise SystemExit(f"unknown planners {unknown}; an outside planner needs --planner-module")
     modes = checked_modes(modes)
     check_upstream(labels, spec, SPECS[spec], load_config(run_json))
     text = Path(labels).read_text()
@@ -88,7 +95,8 @@ def run(
     with out_path.open("a") as fh:
         writer = SceneWriter(fh, skip)
         # each worker gets the tests once, not with every job
-        for lines in run_jobs(_job, items, workers, initializer=_init, initargs=(pending,)):
+        init = (pending, tuple(planner_modules))
+        for lines in run_jobs(_job, items, workers, initializer=_init, initargs=init):
             writer.write(lines)
     writer.report(out_path)
     # Refuse scenes with tests that are missing from the scene inputs.
@@ -156,9 +164,10 @@ def _settings(
     )
 
 
-def _init(tests: dict) -> None:
+def _init(tests: dict, planner_modules: tuple[str, ...] = ()) -> None:
     global _ROWS_BY_SCENE
     _ROWS_BY_SCENE = tests
+    import_planner_modules(planner_modules)  # a fresh worker knows only the built-in planners
 
 
 def _job(item: tuple):

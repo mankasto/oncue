@@ -11,8 +11,6 @@ The oracle has no command of its own.
 
 - `oncue label` calls `labels.label_sample` on every sample; `--budget N` sets B (default
   `OracleConfig.budget`, 288).
-- `oncue baseline evaluate` labels each adversary row the same way (`baselines/exchange.py`).
-- `python -m experiments logs` labels the logged road users that can be evaluated.
 - The closed loop reuses `checks.clearances` and `responses.EgoPath`.
 
 ## Files
