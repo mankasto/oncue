@@ -9,6 +9,7 @@
 
 <p align="center">
   <a href="#">Paper (arXiv, coming soon)</a> &nbsp;|&nbsp;
+  <a href="https://mankasto.github.io/oncue/">Project page</a> &nbsp;|&nbsp;
   <a href="#installation">Installation</a> &nbsp;|&nbsp;
   <a href="#generating-labeling-and-evaluating-tests">Quick start</a> &nbsp;|&nbsp;
   <a href="#citation">Citation</a>
@@ -185,7 +186,8 @@ The citation will be updated with the arXiv version.
 ```bibtex
 @article{oncue2026,
   title   = {OnCue: Generating Safety-Critical Driving Scenarios under Occlusion with Temporal Control},
-  author  = {Authors to be added},
+  author  = {Ma, Kailang and Song, Li and Ren, Weining and Li, Zirui and Dai, Xianjie and Li, Jingguang and
+             Guo, Zuyi and Chen, Benwang and Huang, Heye},
   journal = {arXiv preprint},
   year    = {2026}
 }
