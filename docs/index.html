@@ -66,6 +66,11 @@ h1 { font-size: clamp(26px, 4vw, 40px); line-height: 1.2; margin: 0 0 14px; font
   :root:not([data-theme="light"]) .logo-dark { display: block; } }
 :root[data-theme="dark"] .logo-light { display: none; }
 :root[data-theme="dark"] .logo-dark { display: block; }
+.affil .logo-dark { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .affil .logo-light { display: none; }
+  :root:not([data-theme="light"]) .affil .logo-dark { display: inline; } }
+:root[data-theme="dark"] .affil .logo-light { display: none; }
+:root[data-theme="dark"] .affil .logo-dark { display: inline; }
 .venue { display: inline-block; color: var(--muted); margin: 0; padding: 3px 14px; border: 1px solid var(--line);
   border-radius: 999px; background: var(--card); font-size: 14px; }
 .tldr { max-width: 860px; margin: 20px auto 0; padding: 14px 20px; border: 1px solid var(--line); border-left: 4px solid var(--accent);
@@ -256,10 +261,10 @@ footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
     <sup>3</sup>The Chinese University of Hong Kong &ensp; <sup>4</sup>Nanyang Technological University</p>
   <p class="affiliations"><sup>*</sup>Corresponding author</p>
   <div class="affil-logos">
-    <span class="affil"><sup>1</sup><img src="assets/affiliation-kaist.svg" alt="KAIST" style="height: 44px"></span>
+    <span class="affil"><sup>1</sup><img class="logo-light" src="assets/affiliation-kaist.svg" alt="KAIST" style="height: 44px"><img class="logo-dark" src="assets/affiliation-kaist-dark.svg" alt="KAIST" style="height: 44px"></span>
     <span class="affil"><sup>2</sup><img src="assets/affiliation-zhijia.png" alt="Zhijia Technology" style="height: 24px"></span>
-    <span class="affil"><sup>3</sup><img src="assets/affiliation-cuhk.png" alt="The Chinese University of Hong Kong" style="height: 44px"></span>
-    <span class="affil"><sup>4</sup><img src="assets/affiliation-ntu.png" alt="Nanyang Technological University" style="height: 44px"></span>
+    <span class="affil"><sup>3</sup><img class="logo-light" src="assets/affiliation-cuhk.png" alt="The Chinese University of Hong Kong" style="height: 44px"><img class="logo-dark" src="assets/affiliation-cuhk-dark.png" alt="The Chinese University of Hong Kong" style="height: 44px"></span>
+    <span class="affil"><sup>4</sup><img class="logo-light" src="assets/affiliation-ntu.png" alt="Nanyang Technological University" style="height: 44px"><img class="logo-dark" src="assets/affiliation-ntu-dark.png" alt="Nanyang Technological University" style="height: 44px"></span>
   </div>
   <p class="links"><a class="button" href="https://arxiv.org/abs/2611.33439">arXiv</a>
     <a class="button" href="https://github.com/mankasto/oncue">Code</a><a class="button" href="#bibtex">BibTeX</a></p>

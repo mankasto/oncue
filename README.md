@@ -15,10 +15,10 @@
 </p>
 
 <p align="center">
-  <sup>1</sup>&nbsp;<img src="assets/figures/affiliation-kaist.svg" height="40" alt="KAIST">&nbsp;&nbsp;&nbsp;&nbsp;
+  <sup>1</sup>&nbsp;<picture><source media="(prefers-color-scheme: dark)" srcset="assets/figures/affiliation-kaist-dark.svg"><img src="assets/figures/affiliation-kaist.svg" height="40" alt="KAIST"></picture>&nbsp;&nbsp;&nbsp;&nbsp;
   <sup>2</sup>&nbsp;<img src="assets/figures/affiliation-zhijia.png" height="22" alt="Zhijia Technology">&nbsp;&nbsp;&nbsp;&nbsp;
-  <sup>3</sup>&nbsp;<img src="assets/figures/affiliation-cuhk.png" height="40" alt="The Chinese University of Hong Kong">&nbsp;&nbsp;&nbsp;&nbsp;
-  <sup>4</sup>&nbsp;<img src="assets/figures/affiliation-ntu.png" height="40" alt="Nanyang Technological University">
+  <sup>3</sup>&nbsp;<picture><source media="(prefers-color-scheme: dark)" srcset="assets/figures/affiliation-cuhk-dark.png"><img src="assets/figures/affiliation-cuhk.png" height="40" alt="The Chinese University of Hong Kong"></picture>&nbsp;&nbsp;&nbsp;&nbsp;
+  <sup>4</sup>&nbsp;<picture><source media="(prefers-color-scheme: dark)" srcset="assets/figures/affiliation-ntu-dark.png"><img src="assets/figures/affiliation-ntu.png" height="40" alt="Nanyang Technological University"></picture>
 </p>
 
 <p align="center">
