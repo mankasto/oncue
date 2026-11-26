@@ -10,7 +10,7 @@
 <p align="center">
   Kailang Ma<sup>1</sup>, Li Song<sup>2</sup>, Weining Ren<sup>3</sup>, Zirui Li<sup>4</sup>, Xianjie Dai<sup>1</sup>,
   Jingguang Li<sup>1</sup>, Zuyi Guo<sup>1</sup>, Benwang Chen<sup>1</sup>, Heye Huang<sup>1&dagger;</sup><br>
-  <sub><sup>1</sup>Korea Advanced Institute of Science and Technology &nbsp;&nbsp; <sup>2</sup>Giga<br>
+  <sub><sup>1</sup>Korea Advanced Institute of Science and Technology &nbsp;&nbsp; <sup>2</sup>Zhijia Technology<br>
   <sup>3</sup>The Chinese University of Hong Kong &nbsp;&nbsp; <sup>4</sup>Nanyang Technological University &nbsp;&nbsp; <sup>&dagger;</sup>Corresponding author</sub>
 </p>
 
