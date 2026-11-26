@@ -21,7 +21,7 @@
 </p>
 
 <p align="center">
-  <a href="#">Paper (arXiv, coming soon)</a> &nbsp;|&nbsp;
+  <a href="https://arxiv.org/abs/2611.33439">Paper (arXiv)</a> &nbsp;|&nbsp;
   <a href="https://mankasto.github.io/oncue/">Project page</a> &nbsp;|&nbsp;
   <a href="#installation">Installation</a> &nbsp;|&nbsp;
   <a href="#generating-labeling-and-evaluating-tests">Quick start</a> &nbsp;|&nbsp;
@@ -30,15 +30,16 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/arXiv-coming%20soon-b31b1b.svg" alt="arXiv: coming soon">
+  <a href="https://arxiv.org/abs/2611.33439"><img src="https://img.shields.io/badge/arXiv-2611.33439-b31b1b.svg" alt="arXiv: 2611.33439"></a>
   <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0">
   <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="Python 3.10+">
 </p>
 
 > [!NOTE]
 > **📢 News**
+> - **[2026/11]** Paper on arXiv: [2611.33439](https://arxiv.org/abs/2611.33439).
 > - **[2026/11]** Code released: test generation, response labeling and closed-loop planner evaluation on the
->   Waymo Open Motion Dataset. The paper will be on arXiv soon.
+>   Waymo Open Motion Dataset.
 
 ## 💡 Introduction
 
@@ -263,14 +264,14 @@ with 95% intervals. It also holds the planner template, `my_planner.py`.
 
 ## 📝 Citation
 
-The citation will be updated with the arXiv version.
+If you find OnCue useful, please cite the paper:
 
 ```bibtex
 @article{oncue2026,
   title   = {OnCue: Generating Safety-Critical Driving Scenarios under Occlusion with Temporal Control},
   author  = {Ma, Kailang and Song, Li and Ren, Weining and Li, Zirui and Dai, Xianjie and Li, Jingguang and
              Guo, Zuyi and Chen, Benwang and Huang, Heye},
-  journal = {arXiv preprint},
+  journal = {arXiv preprint arXiv:2611.33439},
   year    = {2026}
 }
 ```
