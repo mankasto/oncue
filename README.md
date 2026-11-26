@@ -16,7 +16,7 @@
 
 <p align="center">
   <sup>1</sup>&nbsp;<img src="assets/figures/affiliation-kaist.svg" height="40" alt="KAIST">&nbsp;&nbsp;&nbsp;&nbsp;
-  <sup>2</sup>&nbsp;<img src="assets/figures/affiliation-zhijia.png" height="28" alt="Zhijia Technology">&nbsp;&nbsp;&nbsp;&nbsp;
+  <sup>2</sup>&nbsp;<img src="assets/figures/affiliation-zhijia.png" height="22" alt="Zhijia Technology">&nbsp;&nbsp;&nbsp;&nbsp;
   <sup>3</sup>&nbsp;<img src="assets/figures/affiliation-cuhk.png" height="40" alt="The Chinese University of Hong Kong">&nbsp;&nbsp;&nbsp;&nbsp;
   <sup>4</sup>&nbsp;<img src="assets/figures/affiliation-ntu.png" height="40" alt="Nanyang Technological University">
 </p>
